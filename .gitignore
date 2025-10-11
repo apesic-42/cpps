@@ -1,0 +1,73 @@
+# Fichiers compilés
+*.o
+*.a
+*.so
+*.dll
+*.exe
+*.out
+*.app
+
+# Fichiers générés par le préprocesseur
+*.i
+*.ii
+
+# Fichiers de dépendances et caches
+*.d
+*.pch
+*.gch
+
+# Fichiers de build (CMake, Make, etc.)
+build/
+Build/
+cmake-build-*/
+CMakeFiles/
+Makefile
+compile_commands.json
+
+# Fichiers de configuration IDE/éditeurs
+.idea/
+.vscode/
+*.swp
+*.swo
+*.user
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.suo
+
+# Fichiers de logs et temporaires
+*.log
+*.tmp
+*~
+.DS_Store
+
+# Fichiers de dépendances externes (si tu utilises des sous-modules ou des gestionnaires de paquets)
+vendor/
+lib/
+deps/
+third_party/
+
+# Fichiers de documentation générés
+doc/
+docs/build/
+
+# Fichiers de tests et coverage
+*.gcda
+*.gcno
+*.gcov
+coverage/
+
+# Fichiers de configuration locale
+.env
+*.local
+
+# Fichiers de sauvegarde
+*#
+*.bak
+*.old
+*.save
+
+# Fichiers de cache système
+__pycache__/
+.Trash-*/
+
