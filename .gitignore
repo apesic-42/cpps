@@ -21,7 +21,7 @@ build/
 Build/
 cmake-build-*/
 CMakeFiles/
-Makefile
+#Makefile
 compile_commands.json
 
 # Fichiers de configuration IDE/éditeurs
