@@ -14,7 +14,6 @@ int main(int c, char **buf)
             {
                 std::cout << (char)std::toupper(buf[i][y]);
             }
-            std::cout << " ";
         }
     }
     std::cout << std::endl;
