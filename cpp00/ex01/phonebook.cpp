@@ -1,62 +1,41 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   phonebook.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apesic <apesic@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/20 11:36:31 by apesic            #+#    #+#             */
+/*   Updated: 2025/10/20 11:36:32 by apesic           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include <iostream>
-#include "Contact.class.hpp"
+#include "_Contact.hpp"
+#include "_PhoneBook.hpp"
 #include <cstring>
-using namespace std;
+#include <string>
 
 
-int main()
-{
-    PhoneBook phonebook;
 
-    cout << "Welcom to phon book, please make ADD or SEARCH or EXIT" << endl;
-    char commande[300];
+int main(void){
+
+    PhoneBook repertoire;
+    repertoire.index = 0;
+
+    std::string in;
+    std::cout << "Hi welcome to phone book" << std::endl << std::endl;
+
     while (true)
     {
-        commande[0] = '\0';
-        cin >> commande;
-        if (strcmp(commande, "ADD") == 0)
-        {
-            char name[100]; char number[100];
-            cout << "please type name :" << endl;
-            cin >> name;
-            cout << "please type number :" << endl;
-            cin >> number;
-            phonebook.add_contact(number, name);
-            cout << "phone book contact added" << endl;
-            cout << "name : "
-                      << phonebook.contacts[phonebook.index == 0 ? 7 : phonebook.index - 1].name
-                      << " number : "
-                      << phonebook.contacts[phonebook.index == 0 ? 7 : phonebook.index - 1].number
-                      << endl;
+        std::cout << "please choose :" << std::endl << "1 : ADD" << std::endl << "2 : SEARCH" << std::endl << "3 : EXIT" << std::endl;
 
-                cout << endl << "ADD or SEARCH or EXIT" << endl;
-
-        }
-        else if (strcmp(commande, "SEARCH") == 0)
-        {
-            string nm;
-            cout << "search what ?:" << endl;
-            cin >> nm;
-            vector<string>res  = phonebook.search_contact(nm);
-            if (res.empty())
-                cout << "contact not found" << endl;
-            else
-                cout << "contact find : " << res[0] << " : " << res[1] << endl ;
-            cout << endl << "ADD or SEARCH or EXIT" << endl;
-
-        }
-        else if (strcmp(commande, "EXIT") == 0)
-        {
-            cout << "exit" << endl;
-            return 0;
-        }
-        else
-        {
-            cout << "wrong commande : " << commande <<  endl;
-        }
+        std::getline(std::cin, in);
+        if (in == "ADD")
+            repertoire.add_contact();
 
     }
-
     return 0;
+
 }

@@ -1,32 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   megaphone.cpp                                      :+:      :+:    :+:   */
+/*   _Contact.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: apesic <apesic@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/20 11:36:17 by apesic            #+#    #+#             */
-/*   Updated: 2025/10/20 11:36:18 by apesic           ###   ########.fr       */
+/*   Created: 2025/10/20 11:36:05 by apesic            #+#    #+#             */
+/*   Updated: 2025/10/20 11:41:28 by apesic           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
 
-int main(int c, char **buf)
-{
+#include <string>
 
-    if (c == 1)
-    {
-        std::cout << "* LOUD AND UNBEARABLE FEEDBACK NOISE *";
-    }
-    else {
-        for (int i = 1; i < c; i++)
-        {
-            for (int y = 0; buf[i][y]; y++)
-            {
-                std::cout << (char)std::toupper(buf[i][y]);
-            }
-        }
-    }
-    std::cout << std::endl;
-}
+#ifndef CONTACT_HPP
+#define CONTACT_HPP
+
+class Contact{
+	private :
+		std::string  first_name;
+		std::string  last_name;
+		std::string  phone_number;
+		std::string  nickname;
+		std::string  darkest_secret;
+	public :
+		bool set_first_name(void);
+		bool set_last_name(void);
+		bool set_phone_number(void);
+		bool set_nickname(void);
+		bool set_darkest_secret(void);
+};
+
+#endif

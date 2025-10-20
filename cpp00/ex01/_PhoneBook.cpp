@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   _PhoneBook.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apesic <apesic@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/20 11:36:24 by apesic            #+#    #+#             */
+/*   Updated: 2025/10/20 11:54:32 by apesic           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 
 #include <iostream>
@@ -48,7 +60,7 @@ void PhoneBook::add_contact()
 	{
 		ok = un.set_darkest_secret();
 	}
-	this->contact[count_add_contact()] = un;
 	std::cout << "contact added" << std::endl;
+	this->contact[count_add_contact()] = un;
 };
 
