@@ -20,11 +20,11 @@
 
 int PhoneBook::count_add_contact()
 {
-	if (this->index > 7)
+	if (this->count > 7)
 	{
-		this->index = 0;
+		this->count = 0;
 	}
-	return this->index;
+	return this->count;
 }
 
 void PhoneBook::add_contact()
@@ -64,8 +64,14 @@ void PhoneBook::add_contact()
 		ok = un.set_darkest_secret();
 	}
 	std::cout << "contact added" << std::endl;
+	// erreur si on arrive au dessus de 8 (ca efface tous)
+	bool DONT_INCR;
+	if (this->index > 7)
+	    DONT_INCR = true;
 	this->contact[count_add_contact()] = un;
-	this->index++;
+	if (!DONT_INCR)
+	    this->index++;
+	this->count++;
 };
 
 

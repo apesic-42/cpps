@@ -23,6 +23,7 @@ int main(void){
 
     PhoneBook repertoire;
     repertoire.index = 0;
+    repertoire.count = 0;
 
     std::string in;
     std::cout << "Hi welcome to phone book" << std::endl << std::endl;

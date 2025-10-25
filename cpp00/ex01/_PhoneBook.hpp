@@ -24,7 +24,8 @@ class PhoneBook{
 	 	Contact contact[8];
 
 	public :
-		int index;
+		int index; // to keep size of stack in reality
+		int count; // to keep count, position of next add
 		void add_contact();
 		void search_contact();
 		int count_add_contact();
