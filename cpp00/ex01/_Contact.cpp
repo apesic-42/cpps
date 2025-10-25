@@ -21,7 +21,7 @@
 
 bool is_good(std::string a)
 {
-	if (a.size() < 2 || a.size() > 1000)
+	if (a.size() < 2 || a.size() > 150)
 		return false;
 	return true;
 }
@@ -32,7 +32,8 @@ bool Contact::set_first_name(void)
 
 	std::cout << "enter a first name" << std::endl;
 
-	std::getline(std::cin, inn);
+	if (!std::getline(std::cin, inn))
+        return false;
 	if (is_good(inn) == false)
 	{
 		std::cout << "resonnable first name" << std::endl;
@@ -52,14 +53,15 @@ bool Contact::set_last_name(void)
 
 	std::cout << "enter a last  name" << std::endl;
 
-	std::getline(std::cin, inn);
+	if (!std::getline(std::cin, inn))
+        return false;
 	if (is_good(inn) == false)
 	{
 		std::cout << "resonnable last name" << std::endl;
 		return false;
 	}
 	else
-	this->last_name = inn;
+	    this->last_name = inn;
 	std::cout << this->last_name << std::endl;
 	return true;
 
@@ -72,17 +74,17 @@ bool Contact::set_phone_number(void)
 
 	std::cout << "enter a phone number" << std::endl;
 
-	std::getline(std::cin, inn);
+	if (!std::getline(std::cin, inn))
+        return false;
 	if (is_good(inn) == false)
 	{
 		std::cout << "A PHONE NUMBER" << std::endl;
 		return false;
 	}
 	else
-	this->phone_number = inn;
+	    this->phone_number = inn;
 	std::cout << this->phone_number << std::endl;
 	return true;
-
 }
 
 
@@ -92,7 +94,8 @@ bool Contact::set_nickname(void)
 
 	std::cout << "enter a nickname" << std::endl;
 
-	std::getline(std::cin, inn);
+	if (!std::getline(std::cin, inn))
+        return false;
 	if (is_good(inn) == false)
 	{
 		std::cout << "a resonnable nickname" << std::endl;
@@ -112,7 +115,8 @@ bool Contact::set_darkest_secret(void)
 
 	std::cout << "and now, be discret and enter your darkest secret" << std::endl;
 
-	std::getline(std::cin, inn);
+	if (!std::getline(std::cin, inn))
+        return false;
 	if (is_good(inn) == false)
 	{
 		std::cout << "that bad, please more darkest" << std::endl;
@@ -124,3 +128,9 @@ bool Contact::set_darkest_secret(void)
 	return true;
 
 }
+
+std::string  Contact::get_first_name(void){return this->first_name;}
+std::string  Contact::get_last_name(void){return this->last_name;}
+std::string  Contact::get_phone_number(void){return this->phone_number;}
+std::string  Contact::get_nickname(void){return this->nickname;}
+std::string  Contact::get_darkest_secret(void){return this->darkest_secret;}

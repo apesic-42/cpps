@@ -13,6 +13,9 @@
 
 
 #include <iostream>
+#include <cstring>
+#include <string>
+#include <sstream>
 #include "_PhoneBook.hpp"
 
 int PhoneBook::count_add_contact()
@@ -62,5 +65,83 @@ void PhoneBook::add_contact()
 	}
 	std::cout << "contact added" << std::endl;
 	this->contact[count_add_contact()] = un;
+	this->index++;
 };
 
+
+std::string get_segment(std::string remplacement)
+{
+    std::string remplacementt;
+
+    if (remplacement.size() > 10)
+        remplacementt = remplacement.substr(0, 9) + ".";
+    else
+    {
+        remplacementt = remplacement;
+    }
+
+    return std::string(10 - remplacementt.size(),' ') + remplacementt;
+}
+
+std::string get_line(Contact contact, int index)
+{
+    std::string ret;
+    std::stringstream ss;
+    ss << index;
+
+    std::string ind = "         " + ss.str();
+    std::string fn = "|" + get_segment(contact.get_first_name());
+    std::string ln = "|" + get_segment(contact.get_last_name());
+    std::string nn = "|" + get_segment(contact.get_nickname());
+    return (ind + fn + ln + nn);
+}
+
+
+
+bool type_ok(std::string index_choisit)
+{
+    for (size_t i = 0; i < index_choisit.size(); i++)
+    {
+        if(!isdigit(index_choisit[i]))
+            return false;
+    }
+    return true;
+}
+
+void PhoneBook::search_contact()
+{
+    int nombre;
+    if (this->index <= 0)
+        std::cout << "You have " << this->index << "contacts, please before upload contacts." << std::endl;
+
+    for (int i = 0; i < this->index; i++)
+    {
+        std::cout << get_line(this->contact[i], i) << std::endl;
+    }
+    std::string index_choisit;
+    if (!std::getline(std::cin, index_choisit))
+        return;
+    if (!type_ok(index_choisit))
+    {
+        std::cout << "type please type a number" << std::endl;
+        return;
+    }
+    for(int i = 0; i < this->index; i++)
+    {
+        std::istringstream ss(index_choisit);
+        ss >> nombre;
+        if (i == nombre)
+        {
+            std::cout << "first name :" << this->contact[nombre].get_first_name() << std::endl;
+            std::cout << "last name :" << this->contact[nombre].get_last_name() << std::endl;
+            std::cout << "nickname :" << this->contact[nombre].get_nickname() << std::endl;
+            std::cout << "phone number :" << this->contact[nombre].get_phone_number() << std::endl;
+            std::cout << "Darkest secret :" << this->contact[nombre].get_darkest_secret() << std::endl;
+            return;
+        }
+    }
+    std::cout << "Contact not found" << std::endl;
+
+
+
+}

@@ -31,9 +31,14 @@ int main(void){
     {
         std::cout << "please choose :" << std::endl << "1 : ADD" << std::endl << "2 : SEARCH" << std::endl << "3 : EXIT" << std::endl;
 
-        std::getline(std::cin, in);
+        if (!std::getline(std::cin, in))
+            break;
         if (in == "ADD")
             repertoire.add_contact();
+        if (in == "SEARCH")
+            repertoire.search_contact();
+        if (in == "EXIT")
+            break;
 
     }
     return 0;

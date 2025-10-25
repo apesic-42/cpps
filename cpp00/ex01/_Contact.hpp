@@ -29,6 +29,12 @@ class Contact{
 		bool set_phone_number(void);
 		bool set_nickname(void);
 		bool set_darkest_secret(void);
+
+		std::string  get_first_name(void);
+		std::string  get_last_name(void);
+		std::string  get_phone_number(void);
+		std::string  get_nickname(void);
+		std::string  get_darkest_secret(void);
 };
 
 #endif

@@ -26,6 +26,7 @@ class PhoneBook{
 	public :
 		int index;
 		void add_contact();
+		void search_contact();
 		int count_add_contact();
 
 };
