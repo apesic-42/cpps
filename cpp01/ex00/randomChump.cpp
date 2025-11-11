@@ -1,15 +1,14 @@
 
-
-#include "Zombie.hpp"
-#include "newZombie.cpp"
+// #include "Zombie.hpp"
+#include "Zombie.h"
 #include <string>
 #include <iostream>
-using namespace std;
+// using namespace std;
 
 
 
-void randomChump( string name )
+void randomChump( std::string name )
 {
     Zombie* zom = newZombie(name);
-    zom->annonce();
+    zom->announce();
 }
