@@ -6,11 +6,12 @@
 
 class HumanA{
     private :
-        Weapon weanpon;
         std::string name;
+        Weapon weapon;
 
     public :
         void attack();
         // HumanA takes the Weapon in its constructor
+        HumanA(std::string name, Weapon weapon);
 };
 #endif

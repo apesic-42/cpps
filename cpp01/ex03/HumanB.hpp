@@ -7,11 +7,13 @@
 
 class HumanB{
     private :
-        Weapon weanpon;
+        Weapon weapon;
         std::string name;
 
     public :
         void attack();
         // HumanA don't takes the Weapon in its constructor
+        HumanB(std::string name);
+        void setWeapon(Weapon weapon);
 };
 #endif
