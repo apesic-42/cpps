@@ -1,0 +1,59 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+int main(int argc, char **argv)
+{
+    if (argc != 4)
+    {
+        s::cerr << "Usage: " << argv[0] << " <filename> <s1> <s2>" << s::endl;
+        return 1;
+    }
+
+    s::string filename = argv[1];
+    s::string s1 = argv[2];
+    s::string s2 = argv[3];
+
+    if (s1.empty())
+    {
+        s::cerr << "s1 must not be empty." << s::endl;
+        return 1;
+    }
+
+    s::ifstream input(filename.c_str());
+    if (!input)
+    {
+        s::cerr << "cannot open input file '" << filename << "'" << s::endl;
+        return 1;
+    }
+
+    s::ofstream output((filename + ".replace").c_str());
+    if (!output)
+    {
+        s::cerr << "cannot create output file." << s::endl;
+        return 1;
+    }
+
+    s::string line;
+    while (s::getline(input, line))
+    {
+        s::string result;
+        s::size_t pos = 0;
+        s::size_t found;
+
+        while ((found = line.find(s1, pos)) != s::string::npos)
+        {
+            result.append(line, pos, found - pos);
+            result.append(s2);
+            pos = found + s1.length();
+        }
+        result.append(line, pos, line.length() - pos);
+        output << result;
+        if (!input.eof())
+            output << '\n';
+    }
+
+    input.close();
+    output.close();
+    return 0;
+}

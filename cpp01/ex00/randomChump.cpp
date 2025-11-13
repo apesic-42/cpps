@@ -9,6 +9,6 @@
 
 void randomChump( std::string name )
 {
-    Zombie* zom = newZombie(name);
+    Zombie* zom = newZombie(name); //pas alloc
     zom->announce();
 }
