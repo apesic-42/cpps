@@ -6,7 +6,10 @@
 
 void HumanB::attack()
 {
-    std::cout << this->name << " attacks with their " << this->weapon.getType() << std::endl;
+    if (this->weapon.getType() == "")
+        std::cout << this->name << " attacks with their hands" << std::endl;
+    else
+        std::cout << this->name << " attacks with their " << this->weapon.getType() << std::endl;
 }
 
 void HumanB::setWeapon(Weapon weapon){
