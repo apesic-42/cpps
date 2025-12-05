@@ -6,7 +6,8 @@
 class Fixed
 {
 	private:
-		int					pf;
+		int	pf;
+		static const int nbf = 8;
 
 	public:
 		Fixed(void);

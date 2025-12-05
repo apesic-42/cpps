@@ -14,13 +14,13 @@ Fixed::Fixed(const Fixed &fixed)
 	*this = fixed;
 }
 
-Fixed::Fixed(const int n) : pf(n << _nbFrac)
+Fixed::Fixed(const int n) : pf(n << nbf)
 {
 	if (CALL_LOG)
 		std::cout << "Int constructor called" << std::endl;
 }
 
-Fixed::Fixed(const float f) : pf((int)roundf(f * (1 << _nbFrac)))
+Fixed::Fixed(const float f) : pf((int)roundf(f * (1 << nbf)))
 {
 	if (CALL_LOG)
 		std::cout << "Float constructor called" << std::endl;
@@ -57,12 +57,12 @@ void	Fixed::setRawBits(const int raw)
 
 float	Fixed::toFloat(void) const
 {
-	return ((float)pf / (1 << _nbFrac));
+	return ((float)pf / (1 << nbf));
 }
 
 int	Fixed::toInt(void) const
 {
-	return ((int)(roundf((float)pf / (1 << _nbFrac))));
+	return ((int)(roundf((float)pf / (1 << nbf))));
 }
 
 std::ostream	&operator<<(std::ostream &o, const Fixed &fixed)
@@ -70,8 +70,6 @@ std::ostream	&operator<<(std::ostream &o, const Fixed &fixed)
 	o << fixed.toFloat();
 	return (o);
 }
-
-// COMPARISON OPERATORS //
 
 bool	Fixed::operator>(const Fixed &fixed) const
 {
@@ -103,8 +101,6 @@ bool	Fixed::operator!=(const Fixed &fixed) const
 	return (this->pf != fixed.pf);
 }
 
-// ARITHMETIC OPERATORS //
-
 Fixed	Fixed::operator+(const Fixed &fixed) const
 {
 	return (Fixed(this->toFloat() + fixed.toFloat()));
@@ -124,8 +120,6 @@ Fixed	Fixed::operator/(const Fixed &fixed) const
 {
 	return (Fixed(this->toFloat() / fixed.toFloat()));
 }
-
-// INCREMENT OPERATORS //
 
 Fixed	&Fixed::operator++(void)
 {

@@ -8,7 +8,7 @@ class Fixed
 {
 	private:
 		int	pf;
-		static const int _nbFrac = 8;
+		static const int nbf = 8;
 
 	public:
 		Fixed(void);

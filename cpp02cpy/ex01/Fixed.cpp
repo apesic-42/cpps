@@ -13,13 +13,13 @@ Fixed::Fixed(const Fixed &fixed)
 	*this = fixed;
 }
 
-Fixed::Fixed(const int n) : pf(n << _nbFrac)
+Fixed::Fixed(const int n) : pf(n << nbf)
 {
 	std::cout << "Int constructor called" << std::endl;
 	return ;
 }
 
-Fixed::Fixed(const float f) : pf((int)roundf(f * (1 << _nbFrac)))
+Fixed::Fixed(const float f) : pf((int)roundf(f * (1 << nbf)))
 {
 	std::cout << "Float constructor called" << std::endl;
 	return ;
@@ -51,12 +51,12 @@ void	Fixed::setRawBits(const int raw)
 
 float	Fixed::toFloat(void) const
 {
-	return ((float)pf / (1 << _nbFrac));
+	return ((float)pf / (1 << nbf));
 }
 
 int	Fixed::toInt(void) const
 {
-	return ((int)(roundf((float)pf / (1 << _nbFrac))));
+	return ((int)(roundf((float)pf / (1 << nbf))));
 }
 
 std::ostream	&operator<<(std::ostream &o, const Fixed &fixed)
