@@ -133,38 +133,18 @@ Fixed	&Fixed::operator--(void)
 	return (*this);
 }
 
-Fixed	Fixed::operator++(int n)
+Fixed Fixed::operator++( int )
 {
-	Fixed	temp(*this);
-
-	if (n >= 0)
-	{
-		for (int i = 0; i <= n; i++)
-			++(*this);
-	}
-	else
-	{
-		for (int i = 0; i <= (-n); i++)
-			--(*this);
-	}
-	return (temp);
+	Fixed temp = *this;
+	++*this;
+	return temp;
 }
 
-Fixed	Fixed::operator--(int n)
+Fixed Fixed::operator--( int )
 {
-	Fixed	temp(*this);
-
-	if (n >= 0)
-	{
-		for (int i = 0; i <= n; i++)
-			--(*this);
-	}
-	else
-	{
-		for (int i = 0; i <= (-n); i++)
-			++(*this);
-	}
-	return (temp);
+	Fixed temp = *this;
+	--*this;
+	return temp;
 }
 
 Fixed	&Fixed::min(Fixed &fixed1, Fixed &fixed2)
