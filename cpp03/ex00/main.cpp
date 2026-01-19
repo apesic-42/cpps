@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: aperez-b <aperez-b@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/22 14:22:36 by aperez-b          #+#    #+#             */
-/*   Updated: 2022/09/22 16:37:45 by aperez-b         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "ClapTrap.hpp"
 
@@ -17,17 +6,18 @@ void	alice_rundown(void)
 	ClapTrap alice("Alice");
 
 	alice.attack("Bob");
-	alice.attack("Chris");
-	alice.attack("Diana");
-	alice.attack("Elisa");
-	alice.attack("Fred");
-	alice.attack("Gemma");
-	alice.attack("Henry");
-	alice.attack("Isabella");
-	alice.attack("Jack");
-	alice.attack("Kevin");
-	alice.attack("Laura");
-	alice.attack("Mike");
+	alice.attack("Charlie");
+	alice.attack("David");
+	alice.attack("Eve");
+	alice.attack("Frank");
+	alice.attack("Grace");
+	alice.attack("Hank");
+	alice.attack("Ivy");
+	alice.attack("John");
+	alice.attack("Kate");
+	alice.attack("Leo");
+	alice.attack("Mia");
+
 }
 
 void	bob_rundown(void)
