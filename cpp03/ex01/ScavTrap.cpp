@@ -32,14 +32,8 @@ ScavTrap::ScavTrap(ScavTrap const &copy): ClapTrap(copy)
 ScavTrap	&ScavTrap::operator=(ScavTrap const &copy)
 {
 	std::cout << "Assignment operator for ScavTrap called." << std::endl;
-	ClapTrap::operator=(copy);
 	if(this != &copy)
-	{
-		this->set_name(copy.get_name());
-		this->set_hp(copy.get_hp());
-		this->set_nrj_pts(copy.get_nrj_pts());
-		this->set_dmg(copy.get_dmg());
-	}
+		ClapTrap::operator=(copy);
 	return (*this);
 }
 
@@ -49,11 +43,10 @@ void	ScavTrap::attack(const std::string& target)
 	if (this->get_nrj_pts() > 0 && this->get_hp() > 0)
 	{
 		this->set_nrj_pts(this->get_nrj_pts() - 1);
-		this->set_dmg(1);
-		std::cout << ">	ScavTrap " << this->get_name()
+		std::cout << "ScavTrap " << this->get_name()
 					<< " attacks " << target
 					<< " causing " << this->get_dmg()
-					<< " points of damage" << std::endl;
+					<< " points of damage!" << std::endl;
 	}
 	else
 		std::cout << "ScavTrap " << this->get_name()

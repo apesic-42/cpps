@@ -13,7 +13,6 @@ FragTrap::FragTrap(void)
 FragTrap::FragTrap(std::string const &name): ClapTrap(name)
 {
 	std::cout << "FragTrap from ClapTrap " << this->_name << " created." << std::endl;
-	this->_name = "default";
 	this->_hp = 100;
 	this->_nrj_pts = 100;
 	this->_dmg = 30;
@@ -33,12 +32,7 @@ FragTrap	&FragTrap::operator=(FragTrap const &copy)
 {
 	std::cout << "Assignment operator for FragTrap called." << std::endl;
 	if(this != &copy)
-	{
-		this->set_name(copy.get_name());
-		this->set_hp(copy.get_hp());
-		this->set_nrj_pts(copy.get_nrj_pts());
-		this->set_dmg(copy.get_dmg());
-	}
+		ClapTrap::operator=(copy);
 	return (*this);
 }
 
