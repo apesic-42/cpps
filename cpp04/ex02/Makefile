@@ -1,49 +1,35 @@
-NAME	=	animals
-O		=	obj
-I		=	inc
-S		=	src
-SRC		=	$S/AAnimal.cpp \
-			$S/Dog.cpp \
-			$S/Cat.cpp \
-			$S/Brain.cpp \
-			$S/main.cpp
-INCS	=	$I/AAnimal.hpp \
-			$I/Dog.hpp \
-			$I/Cat.hpp \
-			$I/Brain.hpp
-OBJ		=	$(SRC:$S/%.cpp=$O/%.o)
-CC		=	c++
-CFLAGS	=	-Wall -Werror -Wextra -std=c++98 -I$I -g
-LDFLAGS	=
+SRC_DIR = src
+OBJ_DIR = obj
+INC_DIR = inc
 
-ERASE		=	\033[2K\r
-BLUE		=	\033[34m
-YELLOW		=	\033[33m
-GREEN		=	\033[32m
-END			=	\033[0m
+SRC = $(SRC_DIR)/main.cpp \
+      $(SRC_DIR)/AAnimal.cpp \
+      $(SRC_DIR)/Brain.cpp \
+      $(SRC_DIR)/Cat.cpp \
+      $(SRC_DIR)/Dog.cpp
+
+OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+CC = c++
+RM = rm -f
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I$(INC_DIR)
+
+NAME = animals
 
 all: $(NAME)
 
-$O:
-	@mkdir -p $O
-
-$O/%.o: $S/%.cpp Makefile $(INCS) | $O
-	$(CC) $(CFLAGS) -c $< -o $@
-	printf "$(BLUE)-> $<$(END)\n"
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(NAME): $(OBJ)
-	$(CC) $(LDFLAGS) $(OBJ) -o $(NAME)
-	printf "$(GREEN)$(NAME) made$(END)\n"
+	$(CC) $(CPPFLAGS) $(OBJ) -o $(NAME)
 
 clean:
-	rm -rdf $O
-	printf "$(YELLOW)$O removed$(END)\n"
+	$(RM) -r $(OBJ_DIR)
 
-fclean:	clean
-	rm -f $(NAME)
-	printf "$(YELLOW)$(NAME) removed$(END)\n"
+fclean: clean
+	$(RM) $(NAME)
 
 re: fclean all
 
 .PHONY: all clean fclean re
-.SILENT:
