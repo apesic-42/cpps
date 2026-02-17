@@ -3,19 +3,19 @@
 #include <string>
 #include "WrongAnimal.hpp"
 
-WrongAnimal::WrongAnimal(void): _type("WrongAnimal")
+WrongAnimal::WrongAnimal(void): type("WrongAnimal")
 {
-	std::cout << " -> Default WrongAnimal constructor called." << std::endl;
+	std::cout << " -> default WrongAnimal constructor called." << std::endl;
 }
 
-WrongAnimal::WrongAnimal(std::string type): _type(type)
+WrongAnimal::WrongAnimal(std::string type): type(type)
 {
-	std::cout << " -> Parametric WrongAnimal constructor called." << std::endl;
+	std::cout << " -> parametric WrongAnimal constructor called." << std::endl;
 }
 
 WrongAnimal::WrongAnimal(const WrongAnimal &src)
 {
-	std::cout << " -> Copy WrongAnimal constructor called." << std::endl;
+	std::cout << " -> copy WrongAnimal constructor called." << std::endl;
 	*this = src;
 }
 
@@ -28,15 +28,15 @@ WrongAnimal	&WrongAnimal::operator =(const WrongAnimal &src)
 {
 	if (this != &src)
 	{
-		std::cout << " -> Copy assignment WrongAnimal called." << std::endl;
-		this->_type = src._type;
+		std::cout << " -> copy assignment WrongAnimal called." << std::endl;
+		this->type = src.type;
 	}
 	return *this;
 }
 
 std::string	WrongAnimal::getType(void) const
 {
-	return this->_type;
+	return this->type;
 }
 
 void	WrongAnimal::makeSound(void) const

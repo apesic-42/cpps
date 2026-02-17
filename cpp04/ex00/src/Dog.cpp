@@ -6,17 +6,12 @@
 
 Dog::Dog(void): Animal("Dog")
 {
-	std::cout << " -> Default Dog constructor called." << std::endl;
+	std::cout << " -> default Dog constructor called." << std::endl;
 }
 
-//Dog::Dog(std::string type): _type(type)
-//{
-//	std::cout << " -> Parametric Dog constructor called." << std::endl;
-//}
-
-Dog::Dog(const Dog &src): Animal(src._type)
+Dog::Dog(const Dog &src): Animal(src.type)
 {
-	std::cout << " -> Copy Dog constructor called." << std::endl;
+	std::cout << " -> copy Dog constructor called." << std::endl;
 	*this = src;
 }
 
@@ -29,13 +24,13 @@ Dog	&Dog::operator =(const Dog &src)
 {
 	if (this != &src)
 	{
-		std::cout << " -> Copy assignment Dog called." << std::endl;
-		this->_type = src._type;
+		std::cout << " -> copy assignment Dog called." << std::endl;
+		this->type = src.type;
 	}
 	return *this;
 }
 
 void	Dog::makeSound(void) const
 {
-	std::cout << "Imma bark... Woof Woof !" << std::endl;
+	std::cout << "Woof Woof !" << std::endl;
 }

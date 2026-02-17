@@ -5,17 +5,12 @@
 
 WrongCat::WrongCat(void): WrongAnimal("WrongCat")
 {
-	std::cout << " -> Default WrongCat constructor called." << std::endl;
+	std::cout << " -> default WrongCat constructor called." << std::endl;
 }
 
-//WrongCat::WrongCat(std::string type): Animal(type)
-//{
-//	std::cout << " -> Parametric WrongCat constructor called." << std::endl;
-//}
-
-WrongCat::WrongCat(const WrongCat &src): WrongAnimal(src._type)
+WrongCat::WrongCat(const WrongCat &src): WrongAnimal(src.type)
 {
-	std::cout << " -> Copy WrongCat constructor called." << std::endl;
+	std::cout << " -> copy WrongCat constructor called." << std::endl;
 	*this = src;
 }
 
@@ -28,13 +23,13 @@ WrongCat	&WrongCat::operator =(const WrongCat &src)
 {
 	if (this != &src)
 	{
-		std::cout << " -> Copy assignment WrongCat called." << std::endl;
-		this->_type = src._type;
+		std::cout << " -> copy assignment WrongCat called." << std::endl;
+		this->type = src.type;
 	}
 	return *this;
 }
 
 void	WrongCat::makeSound(void) const
 {
-	std::cout << "Imma dominate the world, meow !" << std::endl;
+	std::cout << "Meow !" << std::endl;
 }

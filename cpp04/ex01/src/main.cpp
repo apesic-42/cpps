@@ -1,5 +1,4 @@
 
-
 #include <iostream>
 #include <string>
 #include <string.h>
@@ -10,122 +9,111 @@
 
 void	tests_pointers(void)
 {
-	// Test Brain deep copy
-	Brain	*hector = new Brain();
+	// Brain deep copy (heap)
+	Brain	*hermine = new Brain();
 
 	{
-		Brain	*laura = new Brain();
-		laura->setIdea("great idea", 0);
-		// With assignement
-		*hector = *laura;
-		laura->setIdea("another great idea", 0);
-		// With copy constructor
-		Brain	*thimote = new Brain(*laura);
-		laura->setIdea("bad idea", 0);
-		std::cout << "Laura 1st idea: " << laura->getIdeas()[0] << std::endl;
-		delete laura;
-		std::cout << "Thimote 1st idea: " << thimote->getIdeas()[0] << std::endl;
-		delete thimote;
+		Brain	*leo = new Brain();
+		leo->setIdea("great idea", 0);
+		*hermine = *leo;
+		leo->setIdea("another great idea", 0);
+		Brain	*tomme = new Brain(*leo);
+		leo->setIdea("bad idea", 0);
+		std::cout << "leo 1st idea: " << leo->getIdeas()[0] << std::endl;
+		delete leo;
+		std::cout << "tomme 1st idea: " << tomme->getIdeas()[0] << std::endl;
+		delete tomme;
 	}
-	std::cout << "Hector 1st idea: " << hector->getIdeas()[0] << std::endl;
-	delete hector;
+	std::cout << "hermine 1st idea: " << hermine->getIdeas()[0] << std::endl;
+	delete hermine;
 	std::cout << std::endl << std::endl;
 
-	// Test Cat deep copy
+	// Cat deep copy (heap)
 	Cat	*leo = new Cat();
 
 	{
-		Cat	*milo = new Cat();
-		milo->getBrain()->setIdea("great idea", 0);
-		// With assignement
-		*leo = *milo;
-		milo->getBrain()->setIdea("another great idea", 0);
-		// With copy constructor
-		Cat	*simba = new Cat(*milo);
-		milo->getBrain()->setIdea("bad idea", 0);
-		std::cout << "Milo 1st idea: " << milo->getBrain()->getIdeas()[0] << std::endl;
-		delete milo;
-		std::cout << "Simba 1st idea: " << simba->getBrain()->getIdeas()[0] << std::endl;
-		delete simba;
+		Cat	*mala = new Cat();
+		mala->getBrain()->setIdea("great idea", 0);
+		*leo = *mala;
+		mala->getBrain()->setIdea("another great idea", 0);
+		Cat	*saso = new Cat(*mala);
+		mala->getBrain()->setIdea("bad idea", 0);
+		std::cout << "mala 1st idea: " << mala->getBrain()->getIdeas()[0] << std::endl;
+		delete mala;
+		std::cout << "saso 1st idea: " << saso->getBrain()->getIdeas()[0] << std::endl;
+		delete saso;
 	}
 	std::cout << "Leo 1st idea: " << leo->getBrain()->getIdeas()[0] << std::endl;
 	delete leo;
 	std::cout << std::endl << std::endl;
 
-	// Test Dog deep copy
-	Dog	*tom = new Dog();
+	// Dog deep copy (heap)
+	Dog	*timal = new Dog();
 
 	{
-		Dog	*sumi = new Dog();
-		sumi->getBrain()->setIdea("great idea", 0);
-		// With assignement
-		*tom = *sumi;
-		sumi->getBrain()->setIdea("another great idea", 0);
-		// With copy constructor
-		Dog	*rod = new Dog(*sumi);
-		sumi->getBrain()->setIdea("bad idea", 0);
-		std::cout << "Sumi 1st idea: " << sumi->getBrain()->getIdeas()[0] << std::endl;
-		delete sumi;
-		std::cout << "Rod 1st idea: " << rod->getBrain()->getIdeas()[0] << std::endl;
-		delete rod;
+		Dog	*sdm = new Dog();
+		sdm->getBrain()->setIdea("great idea", 0);
+		*timal = *sdm;
+		sdm->getBrain()->setIdea("another great idea", 0);
+		Dog	*rapta = new Dog(*sdm);
+		sdm->getBrain()->setIdea("bad idea", 0);
+		std::cout << "sdm 1st idea: " << sdm->getBrain()->getIdeas()[0] << std::endl;
+		delete sdm;
+		std::cout << "rapta 1st idea: " << rapta->getBrain()->getIdeas()[0] << std::endl;
+		delete rapta;
 	}
-	std::cout << "Tom 1st idea: " << tom->getBrain()->getIdeas()[0] << std::endl;
-	delete tom;
+	std::cout << "timal 1st idea: " << timal->getBrain()->getIdeas()[0] << std::endl;
+	delete timal;
 }
+
 void	tests(void)
 {
-	// Test Brain deep copy
-	Brain	hector = Brain();
+	// Brain deep copy (stack)
+	Brain	hermine = Brain();
 
 	{
-		Brain	laura = Brain();
-		laura.setIdea("great idea", 0);
-		// With assignement
-		hector = laura;
-		laura.setIdea("another great idea", 0);
-		// With copy constructor
-		Brain	thimote = Brain(laura);
-		laura.setIdea("bad idea", 0);
-		std::cout << "Laura 1st idea: " << laura.getIdeas()[0] << std::endl;
-		std::cout << "Thimote 1st idea: " << thimote.getIdeas()[0] << std::endl;
+		Brain	leo = Brain();
+		leo.setIdea("great idea", 0);
+		hermine = leo;
+		leo.setIdea("another great idea", 0);
+		Brain	tomme = Brain(leo);
+		leo.setIdea("bad idea", 0);
+		std::cout << "leo 1st idea: " << leo.getIdeas()[0] << std::endl;
+		std::cout << "tomme 1st idea: " << tomme.getIdeas()[0] << std::endl;
 	}
-	std::cout << "Hector 1st idea: " << hector.getIdeas()[0] << std::endl;
+	std::cout << "hermine 1st idea: " << hermine.getIdeas()[0] << std::endl;
 	std::cout << std::endl << std::endl;
 
-	// Test Cat deep copy
+	// Cat deep copy (stack)
 	Cat	leo = Cat();
 
 	{
-		Cat	milo = Cat();
-		milo.getBrain()->setIdea("great idea", 0);
-		// With assignement
-		leo = milo;
-		milo.getBrain()->setIdea("another great idea", 0);
-		// With copy constructor
-		Cat	simba = Cat(milo);
-		milo.getBrain()->setIdea("bad idea", 0);
-		std::cout << "Milo 1st idea: " << milo.getBrain()->getIdeas()[0] << std::endl;
-		std::cout << "Simba 1st idea: " << simba.getBrain()->getIdeas()[0] << std::endl;
+		Cat	mala = Cat();
+		mala.getBrain()->setIdea("great idea", 0);
+		leo = mala;
+		mala.getBrain()->setIdea("another great idea", 0);
+		Cat	saso = Cat(mala);
+		mala.getBrain()->setIdea("bad idea", 0);
+		std::cout << "mala 1st idea: " << mala.getBrain()->getIdeas()[0] << std::endl;
+		std::cout << "saso 1st idea: " << saso.getBrain()->getIdeas()[0] << std::endl;
 	}
 	std::cout << "Leo 1st idea: " << leo.getBrain()->getIdeas()[0] << std::endl;
 	std::cout << std::endl << std::endl;
 
-	// Test Dog deep copy
-	Dog	tom = Dog();
+	// Dog deep copy (stack)
+	Dog	timal = Dog();
 
 	{
-		Dog	sumi = Dog();
-		sumi.getBrain()->setIdea("great idea", 0);
-		// With assignement
-		tom = sumi;
-		sumi.getBrain()->setIdea("another great idea", 0);
-		// With copy constructor
-		Dog	rod = Dog(sumi);
-		sumi.getBrain()->setIdea("bad idea", 0);
-		std::cout << "Sumi 1st idea: " << sumi.getBrain()->getIdeas()[0] << std::endl;
-		std::cout << "Rod 1st idea: " << rod.getBrain()->getIdeas()[0] << std::endl;
+		Dog	sdm = Dog();
+		sdm.getBrain()->setIdea("great idea", 0);
+		timal = sdm;
+		sdm.getBrain()->setIdea("another great idea", 0);
+		Dog	rapta = Dog(sdm);
+		sdm.getBrain()->setIdea("bad idea", 0);
+		std::cout << "sdm 1st idea: " << sdm.getBrain()->getIdeas()[0] << std::endl;
+		std::cout << "rapta 1st idea: " << rapta.getBrain()->getIdeas()[0] << std::endl;
 	}
-	std::cout << "Tom 1st idea: " << tom.getBrain()->getIdeas()[0] << std::endl;
+	std::cout << "timal 1st idea: " << timal.getBrain()->getIdeas()[0] << std::endl;
 }
 
 int	main(int argc, char *argv[])
@@ -144,7 +132,6 @@ int	main(int argc, char *argv[])
 	#define ANIMAL_NUM 5
 	Animal *animals[ANIMAL_NUM];
 
-	// Construct
 	for (int cur = 0; cur < ANIMAL_NUM; cur++)
 	{
 		if (cur % 2)
@@ -159,7 +146,6 @@ int	main(int argc, char *argv[])
 
 	std::cout << std::endl;
 
-	// Destruct
 	for (int cur = 0; cur < ANIMAL_NUM; cur++)
 		delete animals[cur];
 

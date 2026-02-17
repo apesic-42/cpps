@@ -8,7 +8,6 @@
 class Dog: public Animal {
 public:
 	Dog(void);
-	//Dog(std::string type);
 	Dog(const Dog &src);
 	virtual			~Dog(void);
 	Dog &operator	=(const Dog &src);

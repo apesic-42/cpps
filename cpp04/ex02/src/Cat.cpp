@@ -5,18 +5,13 @@
 
 Cat::Cat(void): AAnimal("Cat")
 {
-	std::cout << " -> Default Cat constructor called." << std::endl;
+	std::cout << " -> default Cat constructor called." << std::endl;
 	this->_brain = new Brain();
 }
 
-//Cat::Cat(std::string type): Animal(type)
-//{
-//	std::cout << " -> Parametric Cat constructor called." << std::endl;
-//}
-
-Cat::Cat(const Cat &src): AAnimal(src._type)
+Cat::Cat(const Cat &src): AAnimal(src.type)
 {
-	std::cout << " -> Copy Cat constructor called." << std::endl;
+	std::cout << " -> copy Cat constructor called." << std::endl;
 	this->_brain = new Brain();
 	*this = src;
 }
@@ -31,17 +26,16 @@ Cat	&Cat::operator =(const Cat &src)
 {
 	if (this != &src)
 	{
-		std::cout << " -> Copy assignment Cat called." << std::endl;
-		this->_type = src._type;
-		this->_brain->setIdeas(src._brain->getIdeas()); // deep copy
-		//this->_brain = src._brain; // shallow copy
+		std::cout << " -> copy assignment Cat called." << std::endl;
+		this->type = src.type;
+		this->_brain->setIdeas(src._brain->getIdeas());
 	}
 	return *this;
 }
 
 void	Cat::makeSound(void) const
 {
-	std::cout << "Imma dominate the world, meow !" << std::endl;
+	std::cout << "Meow !" << std::endl;
 }
 
 Brain	*Cat::getBrain(void) const

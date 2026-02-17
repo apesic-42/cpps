@@ -10,16 +10,8 @@
 
 int	main()
 {
-	// Dosen't work, because Animal is abstract
-	//AAnimal	ani = AAnimal();
-	//ani.makeSound();
-
 	AAnimal	*cat = new Cat();
 	cat->makeSound();
-
-	// Dosen't work, because Animal is abstract
-	//AAnimal	dog = Dog();
-	//dog.makeSound();
 
 	delete cat;
 

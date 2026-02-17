@@ -4,19 +4,19 @@
 #include <string>
 #include "Animal.hpp"
 
-Animal::Animal(void): _type("Animal")
+Animal::Animal(void): type("Animal")
 {
-	std::cout << " -> Default Animal constructor called." << std::endl;
+	std::cout << " -> default Animal constructor called." << std::endl;
 }
 
-Animal::Animal(std::string type): _type(type)
+Animal::Animal(std::string type): type(type)
 {
-	std::cout << " -> Parametric Animal constructor called." << std::endl;
+	std::cout << " -> parametric Animal constructor called." << std::endl;
 }
 
 Animal::Animal(const Animal &src)
 {
-	std::cout << " -> Copy Animal constructor called." << std::endl;
+	std::cout << " -> copy Animal constructor called." << std::endl;
 	*this = src;
 }
 
@@ -29,15 +29,15 @@ Animal	&Animal::operator =(const Animal &src)
 {
 	if (this != &src)
 	{
-		std::cout << " -> Copy assignment Animal called." << std::endl;
-		this->_type = src._type;
+		std::cout << " -> copy assignment Animal called." << std::endl;
+		this->type = src.type;
 	}
 	return *this;
 }
 
 std::string	Animal::getType(void) const
 {
-	return this->_type;
+	return this->type;
 }
 
 void	Animal::makeSound(void) const

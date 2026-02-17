@@ -10,7 +10,6 @@ private:
 	Brain	*_brain;
 public:
 	Dog(void);
-	//Dog(std::string type);
 	Dog(const Dog &src);
 	virtual ~Dog(void);
 	Dog	&operator =(const Dog &src);

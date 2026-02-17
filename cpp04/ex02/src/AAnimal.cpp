@@ -3,19 +3,19 @@
 #include <string>
 #include "AAnimal.hpp"
 
-AAnimal::AAnimal(void): _type("AAnimal")
+AAnimal::AAnimal(void): type("AAnimal")
 {
-	std::cout << " -> Default AAnimal constructor called." << std::endl;
+	std::cout << " -> default AAnimal constructor called." << std::endl;
 }
 
-AAnimal::AAnimal(std::string type): _type(type)
+AAnimal::AAnimal(std::string type): type(type)
 {
-	std::cout << " -> Parametric AAnimal constructor called." << std::endl;
+	std::cout << " -> parametric AAnimal constructor called." << std::endl;
 }
 
 AAnimal::AAnimal(const AAnimal &src)
 {
-	std::cout << " -> Copy AAnimal constructor called." << std::endl;
+	std::cout << " -> copy AAnimal constructor called." << std::endl;
 	*this = src;
 }
 
@@ -28,15 +28,15 @@ AAnimal	&AAnimal::operator =(const AAnimal &src)
 {
 	if (this != &src)
 	{
-		std::cout << " -> Copy assignment AAnimal called." << std::endl;
-		this->_type = src._type;
+		std::cout << " -> copy assignment AAnimal called." << std::endl;
+		this->type = src.type;
 	}
 	return *this;
 }
 
 std::string	AAnimal::getType(void) const
 {
-	return this->_type;
+	return this->type;
 }
 
 void	AAnimal::makeSound(void) const
