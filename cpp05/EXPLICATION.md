@@ -1,4 +1,3 @@
-on a copier le git, on va le modifier et le comprendre :
 
 
 # le but global : le module cpp05 introduit les *exceptions* (try/catch) et *classe d'exception personnaliser* et l'heritage
@@ -41,7 +40,7 @@ Objectif pédagogique : **les exceptions C++** (try/catch, héritage de `std::ex
 #### le code :
 le code est bien, j'ai pas beacoup modifier, le main a 3 test (nombre non preciser dans le sujet)
 n'oublion pas que 
-Bureaucrat Sleeper1("Bernd", 1500); = Bureaucrat Sleeper1 = Bureaucrat("Bernd", 1500); 
+Bureaucrat Sleeper1("Bernd", 1500) ; = Bureaucrat Sleeper1 = Bureaucrat("Bernd", 1500); 
 
 ### ex01 — Form
 Ajouter une classe `Form` avec attributs **privés** :

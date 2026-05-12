@@ -12,9 +12,9 @@ class RobotomyRequestForm : public AForm
 	private:
 		std::string		_target;
 		virtual void	performAction() const;
-	
+
 	public:
-	// Constructors
+	// Constructors & Destructors
 		RobotomyRequestForm();
 		RobotomyRequestForm(const std::string target);
 		RobotomyRequestForm(const RobotomyRequestForm &other);

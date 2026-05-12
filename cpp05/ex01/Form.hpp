@@ -18,7 +18,7 @@ class Form
 		const int			_execute_grade;
 
 	public:
-		// Constructors
+		// Constructors & Destructors
 		Form();
 		Form(const std::string name, const int sign_grade, const int execute_grade);
 		Form(const Form &other);
@@ -37,7 +37,7 @@ class Form
 			public:
 				virtual const char *what() const throw();
 		};
-		
+
 		class GradeTooLowException : public std::exception
 		{
 			public:

@@ -10,9 +10,9 @@ class PresidentialPardonForm : public AForm
 	private:
 		std::string _target;
 		virtual void	performAction() const;
-	
+
 	public:
-	// Constructors
+	// Constructors & Destructors
 		PresidentialPardonForm();
 		PresidentialPardonForm(const std::string target);
 		PresidentialPardonForm(const PresidentialPardonForm &other);

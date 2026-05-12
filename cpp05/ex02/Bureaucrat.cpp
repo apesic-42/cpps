@@ -2,7 +2,7 @@
 #include "Bureaucrat.hpp"
 #include "AForm.hpp"
 
-// Constructors
+// Constructors & Destructors
 Bureaucrat::Bureaucrat() : _name("Default"), _grade(150)
 {
 
@@ -26,7 +26,7 @@ Bureaucrat::Bureaucrat(const Bureaucrat &other) : _name(other._name), _grade(oth
 Bureaucrat &Bureaucrat::operator=(const Bureaucrat &other)
 {
 	if (this != &other)
-		_grade = other._grade;	
+		_grade = other._grade;
 	return (*this);
 }
 
@@ -46,13 +46,7 @@ int Bureaucrat::getGrade() const
 	return (_grade);
 }
 
-void Bureaucrat::incrementGrade()
-{
-	if (_grade == 1)
-		throw GradeTooHighException();
-	else
-	_grade--;
-}
+
 
 void Bureaucrat::decrementGrade()
 {
@@ -60,6 +54,14 @@ void Bureaucrat::decrementGrade()
 		throw GradeTooLowException();
 	else
 		_grade++;
+}
+
+void Bureaucrat::incrementGrade()
+{
+	if (_grade == 1)
+		throw GradeTooHighException();
+	else
+	_grade--;
 }
 
 void Bureaucrat::signForm(AForm &form)
@@ -86,7 +88,7 @@ void Bureaucrat::executeForm(const AForm &form)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
-	}	
+	}
 }
 
 std::ostream &operator<<(std::ostream &os, Bureaucrat const &other)

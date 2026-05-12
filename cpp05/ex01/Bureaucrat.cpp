@@ -2,7 +2,7 @@
 #include "Bureaucrat.hpp"
 #include "Form.hpp"
 
-// Constructors
+// Constructors & Desstructors
 Bureaucrat::Bureaucrat() : _name("Default"), _grade(150)
 {
 
@@ -26,7 +26,7 @@ Bureaucrat::Bureaucrat(const Bureaucrat &other) : _name(other._name), _grade(oth
 Bureaucrat &Bureaucrat::operator=(const Bureaucrat &other)
 {
 	if (this != &other)
-		_grade = other._grade;	
+		_grade = other._grade;
 	return (*this);
 }
 

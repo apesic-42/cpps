@@ -14,7 +14,7 @@ class Intern
 	private:
 
 	public:
-		// Constructors
+		// Constructors & Destructors
 		Intern();
 		Intern(const Intern &other);
 		Intern &operator=(const Intern &other);

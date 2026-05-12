@@ -19,7 +19,7 @@ class AForm
 		virtual void	performAction() const = 0;
 
 	public:
-		// Constructors
+		// Constructors & Destructors
 		AForm();
 		AForm(const std::string name, const int sign_grade, const int execute_grade);
 		AForm(const AForm &other);
@@ -40,7 +40,7 @@ class AForm
 			public:
 				virtual const char *what() const throw();
 		};
-		
+
 		class GradeTooLowException : public std::exception
 		{
 			public:

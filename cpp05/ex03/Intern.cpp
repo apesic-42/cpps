@@ -5,7 +5,7 @@
 #include "RobotomyRequestForm.hpp"
 #include "PresidentialPardonForm.hpp"
 
-// Constructors
+// Constructors & Destructors
 Intern::Intern()
 {
 
@@ -35,7 +35,7 @@ AForm *Intern::makeForm(const std::string form_name, const std::string form_targ
 
 	while (i < 3 && form_name != available_forms[i])
 		i++;
-	
+
 	switch (i)
 	{
 	case 0:
@@ -52,4 +52,3 @@ AForm *Intern::makeForm(const std::string form_name, const std::string form_targ
 		return NULL;
 	}
 }
-

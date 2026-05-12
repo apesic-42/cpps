@@ -13,7 +13,7 @@ class Bureaucrat
 		int					_grade;
 
 	public:
-		// Constructors
+		// Constructors & Destructors
 		Bureaucrat();
 		Bureaucrat(const std::string name, int grade);
 		Bureaucrat(const Bureaucrat &other);
