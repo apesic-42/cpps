@@ -66,12 +66,6 @@ int	Span::longestSpan(void) const
 	return max - min;
 }
 
-void	Span::insertMany(const int *array, size_t array_len)
-{
-	for (size_t cur = 0; cur < array_len; cur++)
-		this->addNumber(array[cur]);
-}
-
 void	Span::fillWithRandom(size_t num)
 {
 	srand(time(NULL));

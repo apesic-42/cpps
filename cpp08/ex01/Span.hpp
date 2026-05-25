@@ -21,7 +21,15 @@ public:
 	int		shortestSpan(void) const;
 	int		longestSpan(void) const;
 
-	void	insertMany(const int *array, size_t array_len);
+	template<typename InputIt>
+	void	insertMany(InputIt begin, InputIt end)
+	{
+		while (begin != end)
+		{
+			this->addNumber(*begin);
+			++begin;
+		}
+	}
 	void	fillWithRandom(size_t num);
 
 	class MaxSizeReachedException: public std::exception {

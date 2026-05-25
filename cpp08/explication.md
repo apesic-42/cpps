@@ -1,5 +1,5 @@
 # CPP Module 08 — Explication detaillee du code
-note perso : ce module est le dernier de la piscine C++, il introduit enfin la STL (containers, iterators, algorithms). Tout ce qu'on a appris avant (templates, orthodox canonical form) est utilise ici avec les outils standard du C++.
+note perso : ce module introduit enfin la STL (containers, iterators, algorithms). Tout ce qu'on a appris avant (templates, orthodox canonical form) est utilise ici avec les outils standard du C++.
 
 ## Vue d'ensemble du module
 
@@ -40,9 +40,10 @@ La fonction doit trouver la **premiere occurrence** du second parametre dans le 
 # include <algorithm>
 
 template<typename T>
-typename T::iterator    easyfind(T &elems, int el);
-
-# include "../src/easyfind.tpp"
+typename T::iterator    easyfind(T &elems, int el)
+{
+    return std::find(elems.begin(), elems.end(), el);
+}
 
 #endif
 ```
@@ -52,19 +53,9 @@ typename T::iterator    easyfind(T &elems, int el);
 - `T::iterator` est un **type dependant** : il depend du parametre template `T`. En C++, le compilateur ne sait pas si `T::iterator` est un type ou une variable membre. Le mot-cle `typename` lui dit explicitement "c'est un type".
 - Sans `typename`, le compilateur refuse de compiler. C'est une regle fondamentale des templates en C++.
 
-### Pourquoi inclure le `.tpp` a la fin du header ?
+### Pourquoi tout mettre dans le header ?
 
-C'est la meme technique qu'en cpp07 : les templates doivent etre visibles au moment de l'instanciation. Le `.tpp` contient l'implementation et est inclus a la fin du header. C'est un choix d'organisation — ca revient a tout mettre dans le `.hpp`, mais en gardant la separation logique declaration/implementation.
-
-## L'implementation (easyfind.tpp)
-
-```cpp
-template<typename T>
-typename T::iterator    easyfind(T &elems, int el)
-{
-    return std::find(elems.begin(), elems.end(), el);
-}
-```
+Les templates doivent etre visibles au moment de l'instanciation. Ici, la declaration et l'implementation sont directement dans le `.hpp`. C'est l'approche la plus simple — une alternative serait de separer l'implementation dans un fichier `.tpp` inclus a la fin du header (comme en cpp07), mais ici tout est regroupe dans un seul fichier.
 
 ### `std::find` — l'algorithme central
 
@@ -138,7 +129,8 @@ public:
     int     shortestSpan(void) const;
     int     longestSpan(void) const;
 
-    void    insertMany(const int *array, size_t array_len);
+    template<typename InputIt>
+    void    insertMany(InputIt begin, InputIt end);
     void    fillWithRandom(size_t num);
 
     class MaxSizeReachedException: public std::exception { /* ... */ };
@@ -247,10 +239,14 @@ Beaucoup plus simple : le plus grand ecart est toujours `max - min`. Pas besoin 
 ## `insertMany` et `fillWithRandom`
 
 ```cpp
-void    Span::insertMany(const int *array, size_t array_len)
+template<typename InputIt>
+void    Span::insertMany(InputIt begin, InputIt end)
 {
-    for (size_t cur = 0; cur < array_len; cur++)
-        this->addNumber(array[cur]);
+    while (begin != end)
+    {
+        this->addNumber(*begin);
+        ++begin;
+    }
 }
 
 void    Span::fillWithRandom(size_t num)
@@ -261,7 +257,7 @@ void    Span::fillWithRandom(size_t num)
 }
 ```
 
-- `insertMany` : repond a la demande du sujet d'ajouter des nombres via une plage. Ici on passe un tableau C classique + sa taille.
+- `insertMany` : repond a la demande du sujet d'ajouter des nombres via une plage d'iterateurs. C'est un function template qui accepte n'importe quel type d'iterateur (pointeurs C, iterateurs de vector, de list, etc.).
 - `fillWithRandom` : methode utilitaire pour les tests avec beaucoup d'elements (le sujet demande de tester avec au moins 10000 nombres).
 - Les deux reutilisent `addNumber` pour beneficier de la verification de capacite.
 
@@ -346,7 +342,9 @@ On cree donc des alias `iterator` et `const_iterator` qui correspondent aux iter
 
 `std::stack` est un **adaptateur** dont le role est de **restreindre l'interface** d'un conteneur pour forcer un usage LIFO (Last In, First Out). Donner des iterateurs casserait cette abstraction — on pourrait acceder a n'importe quel element, ce qui va a l'encontre du concept de pile. Le sujet joue sur cette idee : on "butche" l'abstraction pour acceder au conteneur sous-jacent.
 
-## L'implementation (MutantStack.tpp)
+## L'implementation (dans MutantStack.hpp)
+
+Comme pour easyfind, l'implementation des methodes templates est directement dans le `.hpp`, apres la declaration de la classe.
 
 ### L'operator= — attention au piege
 

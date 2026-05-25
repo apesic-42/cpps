@@ -1,19 +1,17 @@
 
 
 #include <iostream>
-#include <string>
 #include <stdlib.h>
 #include <time.h>
 
 #include "Span.hpp"
 
-#define MAX_VAL 750
 int main(int, char**)
 {
 	std::cout << "Test subject main, should output (2, 14): ";
 	Span sp = Span(5);
 	int	array[] = {6, 3, 17, 9, 11};
-	sp.insertMany(array, sizeof(array)/sizeof(array[0]));
+	sp.insertMany(array, array + sizeof(array)/sizeof(array[0]));
 	std::cout << "(" << sp.shortestSpan() << ", " << sp.longestSpan() << ")" << std::endl;
 
 	Span	empty = Span();
