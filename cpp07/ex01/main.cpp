@@ -41,5 +41,9 @@ int main(void)
 	double dArr[] = {1.1, 2.2, 3.3};
 	::iter(dArr, 3, print<double>);
 
+	std::cout << "=== Const int array ===" << std::endl;
+	const int constArr[] = {10, 20, 30};
+	::iter(constArr, 3, print<int>);
+
 	return 0;
 }

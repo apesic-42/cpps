@@ -36,22 +36,11 @@ Il faut aussi accepter les pseudo-literals `nan`, `nanf`, `inf`, `inff`, `-inf`,
 
 ## Architecture choisie
 
-Le code définit une seule classe `Interpreter` (déclarée dans `Interpreter.hpp`, implémentée dans `Interpreter.cpp`). C'est un *tagged union* fait à la main : un objet `Interpreter` peut représenter n'importe lequel des 4 types scalaires, et un champ `type` joue le rôle de tag pour dire lequel.
+Le code définit une classe `ScalarConverter` (déclarée dans `ScalarConverter.hpp`, implémentée dans `ScalarConverter.cpp`). Cette classe **n'est pas instanciable** par l'utilisateur (constructeur/copie/destructeur/opérateur= en `private`). Elle expose une seule méthode **statique** `convert(std::string const &value)` qui fait tout le travail.
 
-### Membres principaux (Interpreter.hpp)
+En interne, la fonction `convert` utilise une fonction statique locale `detectType()` qui joue le rôle de parseur. Les variables locales à `convert` servent de *tagged union* : un `int type` joue le rôle de tag, et des variables `ivalue`, `fvalue`, `dvalue`, `cvalue` stockent la valeur parsée.
 
-```cpp
-std::string str;     // la chaîne brute reçue
-int type;            // le tag : TypeChar/TypeInt/TypeFloat/TypeDouble/BadType
-
-int status[4];       // 4 flags, un par type cible
-int ivalue;          // valeur stockée si TypeInt
-float fvalue;        // ...      si TypeFloat
-double dvalue;       // ...      si TypeDouble
-char cvalue;         // ...      si TypeChar
-```
-
-### L'enum `Type` (Interpreter.hpp:48-55)
+### L'enum `Type` (ScalarConverter.cpp)
 
 ```cpp
 enum Type {
@@ -66,74 +55,38 @@ enum Type {
 
 C'est juste un ensemble d'étiquettes symboliques. Les valeurs numériques (0, 1, 2…) servent aussi d'**index dans `status[4]`** : `status[TypeChar]` = flags pour char, `status[TypeInt]` = flags pour int, etc.
 
-### Les flags (Interpreter.hpp:61-62)
+### Les flags (dans convert())
 
 ```cpp
 static const int notPossible    = 0x00000001;
 static const int notDisplayable = 0x00000010;
 ```
 
-Ce sont des bitmasks (chaque flag est sur un bit différent). On peut combiner les flags sur un même `int` avec `|`, et tester avec `&`. Les helpers sont :
+Ce sont des bitmasks (chaque flag est sur un bit différent). On peut combiner les flags sur un même `int` avec `|`, et tester avec `&`.
 
-```cpp
-void setFlag(int status, int flag)  { this->status[status] |= flag; }
-bool hasFlag(int status, int flag)  { return (this->status[status] & flag); }
-```
+## La méthode statique `convert()` (ScalarConverter.cpp)
 
-Note : `notDisplayable = 0x10` (= 16 en décimal) et non `0x02`. Comme on n'utilise que 2 flags, ça marche, mais ce n'est pas dense — c'est juste un choix esthétique de séparer les bits.
+La méthode `ScalarConverter::convert()` orchestre tout le travail :
+1. Déclare les variables locales (`ivalue`, `fvalue`, `dvalue`, `cvalue`, `status[4]`).
+2. Appelle `detectType()` qui parse la chaîne, remplit la bonne variable, et retourne le type détecté.
+3. **Si le parsing a réussi** (`type != BadType`) : convertit via `static_cast` vers les 3 autres types, puis vérifie les flags char (plage ASCII `[0, 127]` + `isprint`).
+4. **Si le parsing a échoué** : tout est marqué impossible.
+5. Affiche les 4 valeurs avec le formatage attendu par le sujet.
 
-## Le constructeur (Interpreter.cpp:4-26)
+## La fonction `detectType()` (ScalarConverter.cpp)
 
-```cpp
-Interpreter::Interpreter(std::string const &value):
-    str(value), type(BadType)
-{
-    for (int i = 0; i < 4; i++)
-        this->status[i] = 0;
-    this->parse();
-    if (this->type != BadType)
-    {
-        this->convert();
-        if (this->hasFlag(TypeInt, this->notPossible)
-            || this->ivalue > 127 || this->ivalue < 0)
-            this->setFlag(TypeChar, this->notPossible);
-        if (!std::isprint(this->cvalue))
-            this->setFlag(TypeChar, this->notDisplayable);
-    }
-    else
-    {
-        this->setFlag(TypeInt, this->notPossible);
-        this->setFlag(TypeFloat, this->notPossible);
-        this->setFlag(TypeDouble, this->notPossible);
-        this->setFlag(TypeChar, this->notPossible);
-    }
-}
-```
-
-**Étapes** :
-1. Stocke la chaîne, initialise le type à `BadType` (par défaut on suppose que ça va échouer).
-2. Met tous les flags à 0.
-3. Appelle `parse()` qui va détecter le type, remplir le bon champ, et mettre à jour `this->type`.
-4. **Si `parse()` a réussi** (`type != BadType`) :
-   - Appelle `convert()` pour générer les 3 autres valeurs à partir de la valeur d'origine.
-   - Vérifie si le char est convertible : il faut que l'int soit dans `[0, 127]` (plage ASCII) et que l'int lui-même soit possible.
-   - Vérifie si le char est affichable (`isprint`).
-5. **Si `parse()` a échoué** : tout est marqué impossible.
-
-## La fonction `parse()` (Interpreter.cpp:41-111)
-
-C'est le cœur du parsing. Elle fait **trois choses en parallèle** pendant qu'elle scanne la chaîne caractère par caractère :
-1. Détermine `this->type` (le tag).
+C'est le cœur du parsing. C'est une fonction statique locale (pas une méthode de classe). Elle fait **trois choses en parallèle** pendant qu'elle scanne la chaîne caractère par caractère :
+1. Détermine le type (retourné comme `int`).
 2. Accumule les caractères valides dans un `std::stringstream ss`.
-3. À la fin, extrait `ss` vers le bon membre (`ivalue`, `fvalue` ou `dvalue`).
+3. À la fin, extrait `ss` vers la bonne variable passée par référence (`ivalue`, `fvalue` ou `dvalue`).
 
 ### Cas 1 : char isolé (lignes 47-52)
 
 ```cpp
-if (length == 1 && !std::isdigit(this->str[0]))
+if (length == 1 && !std::isdigit(str[0]))
 {
-    this->type = TypeChar;
-    this->cvalue = this->str[0];
+    type = TypeChar;
+    cvalue = str[0];
     return ;
 }
 ```
@@ -143,7 +96,7 @@ Si la chaîne fait **un seul caractère ET n'est pas un chiffre**, c'est un char
 ### Cas 2 : signe initial (lignes 53-54)
 
 ```cpp
-if (this->str[0] == '+' || this->str[0] == '-')
+if (str[0] == '+' || str[0] == '-')
     ss << str[i++];
 ```
 
@@ -152,28 +105,28 @@ Si le premier caractère est `+` ou `-`, on le copie dans le stream et on avance
 ### Cas 3 : la boucle principale (lignes 55-81)
 
 ```cpp
-this->type = TypeInt;       // hypothèse de départ
+type = TypeInt;       // hypothèse de départ
 for ( ; i < length; i++)
 {
-    if (this->str[i] == '.' && this->type != TypeDouble)
+    if (str[i] == '.' && type != TypeDouble)
     {
-        this->type = TypeDouble;
+        type = TypeDouble;
         ss << str[i];
     }
-    else if (this->str[i] == 'e' && i < length - 1
-        && (this->str[i + 1] == '-'
-            || this->str[i + 1] == '+'
-            || std::isdigit(this->str[i + 1])))
+    else if (str[i] == 'e' && i < length - 1
+        && (str[i + 1] == '-'
+            || str[i + 1] == '+'
+            || std::isdigit(str[i + 1])))
     {
         ss << str[i] << str[i + 1];
         i++;
-        this->type = TypeDouble;
+        type = TypeDouble;
     }
-    else if (this->str[i] == 'f' && i == length - 1 && this->type == TypeDouble)
-        this->type = TypeFloat;
-    else if (!std::isdigit(this->str[i]))
+    else if (str[i] == 'f' && i == length - 1 && type == TypeDouble)
+        type = TypeFloat;
+    else if (!std::isdigit(str[i]))
     {
-        this->type = BadType;
+        type = BadType;
         i = length;     // sort de la boucle
     }
     else
@@ -194,19 +147,19 @@ On démarre avec l'hypothèse `TypeInt`, puis on monte en type si on trouve des 
 ### Cas 4 : extraction finale (lignes 82-95)
 
 ```cpp
-if (this->type == TypeFloat)
-    ss >> this->fvalue;
-else if (this->type == TypeDouble)
-    ss >> this->dvalue;
-else if (this->type == TypeInt)
+if (type == TypeFloat)
+    ss >> fvalue;
+else if (type == TypeDouble)
+    ss >> dvalue;
+else if (type == TypeInt)
 {
     long lvalue;
     ss >> lvalue;
-    this->ivalue = lvalue;
+    ivalue = lvalue;
     if (ss.fail()
         || lvalue > std::numeric_limits<int>::max()
         || lvalue < std::numeric_limits<int>::min())
-        this->type = BadType;
+        type = BadType;
 }
 ```
 
@@ -215,19 +168,19 @@ On lit le stream dans le bon membre. Pour les entiers, on lit d'abord en `long` 
 ### Cas 5 : pseudo-literals (lignes 96-110)
 
 ```cpp
-else if (this->type == BadType)
+else if (type == BadType)
 {
-    if (this->str == "inff" || this->str == "-inff" || this->str == "+inff"
-        || this->str == "nanf")
+    if (str == "inff" || str == "-inff" || str == "+inff"
+        || str == "nanf")
     {
-        this->fvalue = atof(this->str.c_str());
-        this->type = TypeFloat;
+        fvalue = atof(str.c_str());
+        type = TypeFloat;
     }
-    else if (this->str == "inf" || this->str == "-inf" || this->str == "+inf"
-            || this->str == "nan")
+    else if (str == "inf" || str == "-inf" || str == "+inf"
+            || str == "nan")
     {
-        this->dvalue = atof(this->str.c_str());
-        this->type = TypeDouble;
+        dvalue = atof(str.c_str());
+        type = TypeDouble;
     }
 }
 ```
@@ -236,33 +189,20 @@ Filet de rattrapage pour les valeurs spéciales IEEE 754 que le parseur principa
 
 Une fois extrait, on **promeut** `type` de `BadType` à `TypeFloat` ou `TypeDouble`, pour que le reste de la machinerie (convert + affichage) prenne le relais normalement.
 
-## La fonction `convert()` et ses dérivés
+## Les conversions dans `convert()`
 
-`convert()` (lignes 113-130) est un simple dispatcher :
-
-```cpp
-switch (this->type)
-{
-case TypeInt:    this->fromInt();    break;
-case TypeFloat:  this->fromFloat();  break;
-case TypeDouble: this->fromDouble(); break;
-case TypeChar:   this->fromChar();   break;
-}
-```
-
-Chaque `fromX()` prend la valeur source et la convertit explicitement vers les 3 autres types via `static_cast`. Exemple pour `fromFloat()` (lignes 149-158) :
+Après le parsing, un `switch` sur le type détecté convertit la valeur source vers les 3 autres types via `static_cast` :
 
 ```cpp
-void Interpreter::fromFloat(void)
-{
-    this->ivalue = static_cast<int>(this->fvalue);
-    this->dvalue = static_cast<double>(this->fvalue);
-    this->cvalue = static_cast<char>(this->fvalue);
-    if (!this->floatIsValue()
-        || this->fvalue > std::numeric_limits<int>::max()
-        || this->fvalue < std::numeric_limits<int>::min())
-        this->setFlag(TypeInt, this->notPossible);
-}
+case TypeFloat:
+    ivalue = static_cast<int>(fvalue);
+    dvalue = static_cast<double>(fvalue);
+    cvalue = static_cast<char>(fvalue);
+    if (std::isnan(fvalue) || std::isinf(fvalue)
+        || fvalue > std::numeric_limits<int>::max()
+        || fvalue < std::numeric_limits<int>::min())
+        status[TypeInt] |= notPossible;
+    break;
 ```
 
 **C'est ici qu'on utilise `static_cast`**, le cast cible de cet exercice. Les conversions entre types numériques sont des conversions « logiques » bien définies par le langage, et `static_cast` est l'outil approprié (par opposition à un `(int)fvalue` à la C, sans vérification).
@@ -271,43 +211,11 @@ Le test final lève le flag `notPossible` sur `TypeInt` quand :
 - La valeur source n'est pas finie (NaN ou inf), ou
 - La valeur dépasse la plage d'un `int`.
 
-Les helpers `floatIsValue()` / `doubleIsValue()` (lignes 137-144) testent juste `isnan` et `isinf` :
+## L'affichage (dans convert())
 
-```cpp
-bool Interpreter::floatIsValue(void) const
-{
-    return (!(std::isnan(this->fvalue) || std::isinf(this->fvalue)));
-}
-```
+L'affichage est fait directement à la fin de `convert()` via `std::cout`. Pour chaque type cible, on vérifie le flag correspondant et on affiche soit la valeur, soit `impossible` / `Non displayable`.
 
-`fromInt()` et `fromChar()` (lignes 132-135, 169-174) sont plus simples car ces types ne peuvent pas être NaN ou infini.
-
-## L'affichage : `operator<<` (lignes 224-269)
-
-C'est une fonction libre (pas une méthode) qui prend un `std::ostream&` et un `Interpreter const&`. Elle produit la sortie attendue par le sujet.
-
-Pour chaque type cible, elle vérifie le flag correspondant et affiche soit la valeur, soit `impossible` / `Non displayable` :
-
-```cpp
-if (pr.hasFlag(0, Interpreter::notPossible))         // 0 = TypeChar
-    ss << "char: impossible" << '\n';
-else if (pr.hasFlag(0, Interpreter::notDisplayable))
-    ss << "char: Non displayable" << '\n';
-else
-    ss << "char: '" << pr.getAsChar() << "'\n";
-```
-
-Astuce d'affichage pour float/double (lignes 250-256) :
-
-```cpp
-ss << "float: " << pr.getAsFloat();
-tmp = ss.str();
-if (pr.floatIsValue() && tmp.find('.') == std::string::npos)
-    ss << ".0";
-ss << "f\n";
-```
-
-Quand on affiche `42.0f` avec `cout`, le `.0` se perd (la sortie devient `42f`). Ici on rajoute `.0` manuellement si le point décimal n'apparaît pas dans la chaîne formatée, **et seulement si la valeur est finie** (sinon on aurait `nan.0` ou `inf.0`).
+Astuce d'affichage pour float/double : quand on affiche `42.0f` avec `cout`, le `.0` se perd (la sortie devient `42f`). On rajoute `.0` manuellement si le point décimal n'apparaît pas dans la chaîne formatée, **et seulement si la valeur est finie** (sinon on aurait `nan.0` ou `inf.0`).
 
 ## Le `main` (main.cpp)
 
@@ -317,15 +225,12 @@ int main(int argc, char const *argv[])
     if (argc != 2)
         std::cout << "convert: bad arguments!" << std::endl;
     else
-    {
-        Interpreter p(argv[1]);
-        std::cout << p << std::endl;
-    }
+        ScalarConverter::convert(argv[1]);
     return (0);
 }
 ```
 
-Minimal : vérifie qu'il y a exactement un argument, construit un `Interpreter` avec, l'affiche. Tout le travail est fait dans la classe.
+Minimal : vérifie qu'il y a exactement un argument, appelle la méthode statique `convert`. Tout le travail est fait dans la classe, sans jamais l'instancier.
 
 ## Pourquoi `static_cast` est le bon choix ici
 
@@ -340,11 +245,11 @@ Les conversions char↔int↔float↔double sont des **conversions arithmétique
 
 ## Objectif du sujet
 
-Écrire deux fonctions :
-- `uintptr_t serialize(Data* ptr)` : transforme un pointeur en entier.
-- `Data* deserialize(uintptr_t raw)` : retransforme l'entier en pointeur.
+Implémenter une classe `Serializer` **non instanciable** avec deux méthodes **statiques** :
+- `static uintptr_t serialize(Data* ptr)` : transforme un pointeur en entier.
+- `static Data* deserialize(uintptr_t raw)` : retransforme l'entier en pointeur.
 
-Le programme doit prouver qu'on retombe sur le pointeur d'origine : créer un `Data`, sérialiser, désérialiser, vérifier que le pointeur final pointe vers les mêmes données.
+Le programme doit prouver qu'on retombe sur le pointeur d'origine : créer un `Data`, sérialiser, désérialiser, vérifier que le pointeur final est égal au pointeur d'origine.
 
 ## Le struct `Data` (Data.hpp)
 
@@ -360,15 +265,17 @@ typedef struct s_Data
 
 Structure minimale avec un seul champ string. Le `pragma once` empêche l'inclusion multiple. Le `typedef struct` fait que Data est un alias créé avec typedef.
 
-## Les deux fonctions (main.cpp:17-25)
+## La classe `Serializer` (Serializer.hpp / Serializer.cpp)
+
+La classe a ses constructeur/copie/destructeur/opérateur= en **private** pour empêcher l'instanciation. Les deux méthodes statiques :
 
 ```cpp
-uintptr_t serialize(Data *ptr)
+uintptr_t Serializer::serialize(Data *ptr)
 {
     return (reinterpret_cast<uintptr_t>(ptr));
 }
 
-Data *deserialize(uintptr_t raw)
+Data *Serializer::deserialize(uintptr_t raw)
 {
     return (reinterpret_cast<Data *>(raw));
 }
@@ -386,7 +293,7 @@ C'est un type entier non-signé (de `<stdint.h>` / `<cstdint>`) **garanti assez 
 - `(uintptr_t)ptr` en style C compilerait, mais c'est précisément ce qu'on veut éviter en C++.
 - `reinterpret_cast` dit explicitement : « je sais que je fais une conversion bas niveau, je prends la responsabilité ».
 
-## Le `main` (main.cpp:27-43)
+## Le `main` (main.cpp)
 
 ```cpp
 int main()
@@ -398,21 +305,25 @@ int main()
     ptr = new Data;
     ptr->data = "Fake Data!";
 
-    raw = serialize(ptr);
-    new_ptr = deserialize(raw);
+    raw = Serializer::serialize(ptr);
+    new_ptr = Serializer::deserialize(raw);
 
     std::cout << "Data of ptr: " << ptr->data << std::endl;
     std::cout << "Data of new_ptr: " << new_ptr->data << std::endl;
+
+    if (ptr == new_ptr)
+        std::cout << "Pointers are equal!" << std::endl;
 
     delete ptr;
 }
 ```
 
-**Démonstration en 4 étapes** :
+**Démonstration en 5 étapes** :
 1. Crée un `Data` sur le tas avec un message connu.
-2. Sérialise : récupère la valeur entière du pointeur.
-3. Désérialise : reconstruit un pointeur depuis cet entier.
-4. Affiche les deux contenus — si la sérialisation est correcte, ils sont identiques (`"Dummy Data!"` deux fois).
+2. Sérialise via `Serializer::serialize()` : récupère la valeur entière du pointeur.
+3. Désérialise via `Serializer::deserialize()` : reconstruit un pointeur depuis cet entier.
+4. Affiche les deux contenus — si la sérialisation est correcte, ils sont identiques.
+5. Vérifie que les deux pointeurs sont bien égaux.
 
 Note importante : `ptr` et `new_ptr` pointent vers la **même zone mémoire**, ce ne sont pas deux copies. C'est pour ça qu'on ne `delete` que `ptr` — faire `delete new_ptr` aussi serait un double-free (UB).
 

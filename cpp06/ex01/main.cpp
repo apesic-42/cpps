@@ -1,17 +1,7 @@
 
 #include <iostream>
-#include <stdint.h>
+#include "Serializer.hpp"
 #include "Data.hpp"
-
-uintptr_t	serialize(Data *ptr)
-{
-	return (reinterpret_cast<uintptr_t>(ptr));
-}
-
-Data	*deserialize(uintptr_t raw)
-{
-	return (reinterpret_cast<Data *>(raw));
-}
 
 int	main()
 {
@@ -22,11 +12,16 @@ int	main()
 	ptr = new Data;
 	ptr->data = "Fake Data!";
 
-	raw = serialize(ptr);
-	new_ptr = deserialize(raw);
+	raw = Serializer::serialize(ptr);
+	new_ptr = Serializer::deserialize(raw);
 
 	std::cout << "Data of ptr: " << ptr->data << std::endl;
 	std::cout << "Data of new_ptr: " << new_ptr->data << std::endl;
+
+	if (ptr == new_ptr)
+		std::cout << "Pointers are equal!" << std::endl;
+	else
+		std::cout << "Pointers are NOT equal!" << std::endl;
 
 	delete ptr;
 }

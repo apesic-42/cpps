@@ -175,7 +175,14 @@ Le programme doit prouver que `iter` marche avec **n'importe quel type de tablea
 #include <cstddef>
 
 template <typename T, typename F>
-void iter(T *array, size_t length, F func)
+void iter(T *array, const size_t length, F func)
+{
+    for (size_t i = 0; i < length; i++)
+        func(array[i]);
+}
+
+template <typename T, typename F>
+void iter(const T *array, const size_t length, F func)
 {
     for (size_t i = 0; i < length; i++)
         func(array[i]);
@@ -183,6 +190,10 @@ void iter(T *array, size_t length, F func)
 
 #endif
 ```
+
+### Pourquoi deux overloads ?
+
+Le sujet demande explicitement de supporter les tableaux **const et non-const**. La premiere surcharge accepte un `T *` (tableau modifiable, callback peut prendre `T &`), la seconde un `const T *` (tableau constant, callback doit prendre `T const &`). Sans la surcharge const, passer un `const int arr[]` ne compilerait pas.
 
 ### Pourquoi deux parametres de type (`T` et `F`) ?
 
@@ -195,6 +206,10 @@ On pourrait ecrire `void (*func)(T &)` au lieu de `F func`, mais utiliser un par
 - Des foncteurs (objets avec `operator()`)
 
 Le compilateur deduit `T` depuis le tableau et `F` depuis la fonction passee.
+
+### Pourquoi `const size_t length` ?
+
+Le sujet demande que la longueur soit passee comme une **valeur const**. Ca empeche de la modifier accidentellement dans le corps de la fonction.
 
 ### Comment ca marche a la compilation
 

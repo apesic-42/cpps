@@ -76,7 +76,7 @@ void Bureaucrat::signForm(AForm &form)
 	std::cout << _name << " signed " << form.getName() << std::endl;
 }
 
-void Bureaucrat::executeForm(const AForm &form)
+void Bureaucrat::executeForm(const AForm &form) const
 {
 	try
 	{

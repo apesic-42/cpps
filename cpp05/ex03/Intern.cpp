@@ -43,7 +43,7 @@ AForm *Intern::makeForm(const std::string form_name, const std::string form_targ
 		return (new ShrubberyCreationForm(form_target));
 	case 1:
 		std::cout << "Intern creates " << form_name << std::endl;
-		return (new RobotomyRequestForm(form_name));
+		return (new RobotomyRequestForm(form_target));
 	case 2:
 		std::cout << "Intern creates " << form_name << std::endl;
 		return (new PresidentialPardonForm (form_target));
