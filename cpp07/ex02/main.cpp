@@ -42,7 +42,7 @@ int main(void)
 	std::cout << "\n=== String array ===" << std::endl;
 	Array<std::string> strArr(3);
 	strArr[0] = "Hello";
-	strArr[1] = "World";
+	strArr[1] = "myfriend";
 	strArr[2] = "42";
 	for (unsigned int i = 0; i < strArr.size(); i++)
 		std::cout << "strArr[" << i << "] = " << strArr[i] << std::endl;
