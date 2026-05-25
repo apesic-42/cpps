@@ -7,7 +7,7 @@ Le module 07 porte sur **les templates en C++**. Les templates permettent d'ecri
 
 | Concept | Description |
 |---------|-------------|
-| Function template | Fonction dont le type est un parametre — le compilateur genere une version par type utilise |
+| Function template | Fonction dont le type est un parametre — le compilateur genere une version par type utilise a la compilation |
 | Class template | Classe dont les membres dependent d'un type parametre |
 | Instanciation | Le moment ou le compilateur genere le code concret pour un type donne |
 | Deduction | Le compilateur deduit `T` automatiquement a partir des arguments passes |
