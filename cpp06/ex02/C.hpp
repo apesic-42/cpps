@@ -3,6 +3,7 @@
 
 #include "Base.hpp"
 
+// C = troisieme type concret, meme principe que A et B (heritage public)
 class C : public Base {
 	public:
 		C(void);

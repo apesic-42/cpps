@@ -1,4 +1,5 @@
 
+// ex03 : meme Bureaucrat que ex02 (signForm + executeForm), c'est l'Intern qui est la nouveaute
 #ifndef BUREAUCRAT_HPP
 # define BUREAUCRAT_HPP
 
@@ -7,13 +8,13 @@
 # include <exception>
 # include "AForm.hpp"
 
-class AForm;
+class AForm; // forward declaration
 
 class Bureaucrat
 {
 	private:
-		const std::string	_name;
-		int			_grade;
+		const std::string	_name; // const
+		int			_grade; // 1 (haut) a 150 (bas)
 
 	public:
 		// Constructors & Destructors
@@ -28,8 +29,8 @@ class Bureaucrat
 		int			getGrade() const;
 		void		incrementGrade();
 		void		decrementGrade();
-		void		signForm(AForm &form);
-		void		executeForm(const AForm &form) const;
+		void		signForm(AForm &form); // signature d'un form
+		void		executeForm(const AForm &form) const; // execution d'un form
 
 		// Exceptions
 		class GradeTooHighException : public std::exception

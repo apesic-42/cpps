@@ -1,4 +1,5 @@
 
+// ex02 : Bureaucrat parle maintenant a AForm (abstrait), et gagne executeForm
 #ifndef BUREAUCRAT_HPP
 # define BUREAUCRAT_HPP
 
@@ -7,13 +8,13 @@
 # include <exception>
 # include "AForm.hpp"
 
-class AForm;
+class AForm; // forward declaration
 
 class Bureaucrat
 {
 	private:
-		const std::string	_name;
-		int			_grade;
+		const std::string	_name; // const
+		int			_grade; // 1 a 150
 
 	public:
 		// Constructors & Destructors
@@ -28,8 +29,8 @@ class Bureaucrat
 		int			getGrade() const;
 		void		incrementGrade();
 		void		decrementGrade();
-		void		signForm(AForm &form);
-		void		executeForm(const AForm &form) const;
+		void		signForm(AForm &form); // demande la signature d'un form
+		void		executeForm(const AForm &form) const; // nouveau ex02 : demande l'execution d'un form
 
 		// Exceptions
 		class GradeTooHighException : public std::exception

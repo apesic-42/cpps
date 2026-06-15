@@ -1,6 +1,7 @@
 
 #include "B.hpp"
 
+// classe vide, forme canonique identique a A
 B::B(void) {}
 
 B::B(const B& other) { *this = other; }

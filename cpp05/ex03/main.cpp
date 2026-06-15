@@ -6,6 +6,7 @@
 #include "PresidentialPardonForm.hpp"
 #include "Intern.hpp"
 
+// main de test ex03 : reprend les tests precedents puis teste la factory de l'Intern
 int main(void)
 {
 	std::cout << "\033[36m" << std::endl << "Test too high and too low creation" << "\033[0m" << std::endl;
@@ -113,12 +114,12 @@ int main(void)
 	std::cout << "\033[36m" << std::endl << "Test ex03 Intern" << "\033[0m" << std::endl;
 
 	Intern Jr_Intern;
-	AForm *robo_intern;
+	AForm *robo_intern; // pointeur sur la base AForm : polymorphisme, peut pointer n'importe quel form
 
-	robo_intern = Jr_Intern.makeForm("DoYouKnowMe", "Hmmmm");
-	robo_intern = Jr_Intern.makeForm("RobotomyRequestForm", "World");
+	robo_intern = Jr_Intern.makeForm("DoYouKnowMe", "Hmmmm"); // nom inconnu -> message d'erreur + retourne NULL
+	robo_intern = Jr_Intern.makeForm("RobotomyRequestForm", "World"); // nom valide -> cree le bon form (target "World")
 
 	std::cout << robo_intern->getName() << std::endl;
-	delete robo_intern;
+	delete robo_intern; // on libere : makeForm a fait un new, c'est a l'appelant de delete (destructeur virtuel oblige)
 	return (0);
 }

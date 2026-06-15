@@ -17,7 +17,9 @@
 
   
   - classe d'exeption personnaliser : c'est un classe de type erreur. Pour la faire il faut hériter de std::exception et redéfinir what(). Dans ce sujet on imbrique la classe erreur dans la classe principale (voir ex00/Bureaucrat.hpp l 41)
-
+    chose a savoir sur les exception 
+      1. en fait c'est surtout une astuce pratique les exeption, on fait tous heriter de std:exception pour pouvoir les catcher facilement dans le code, catch est un truc de cpp : pas du tous lier a std:exception. on utilise std:exception plsu par convention
+      2. e.what :  what() est une méthode virtuelle définie dans std::exception, dans le code on l'a redefini
   - heritage, avec "virtual", "protected", les truc de base :
     - virtual est obligatoire pour avoir du polymorphisme. En Python toutes les méthodes sont "virtuelles" par défaut. En C++, sans virtual, l'appel est résolu à la compilation selon le type statique, pas le type réel de l'objet.
     (Ajoute virtual et l'appel devient dynamique (résolu à l'exécution) alors que sinon on va chercher la valeur de la compilation)
@@ -41,6 +43,8 @@ Objectif pédagogique : **les exceptions C++** (try/catch, héritage de `std::ex
 le code est bien, j'ai pas beacoup modifier, le main a 3 test (nombre non preciser dans le sujet)
 n'oublion pas que 
 Bureaucrat Sleeper1("Bernd", 1500) ; = Bureaucrat Sleeper1 = Bureaucrat("Bernd", 1500); 
+
+attention dans la surcharge de =, on ne copie pas le name car c'est const
 
 ### ex01 — Form
 Ajouter une classe `Form` avec attributs **privés** :

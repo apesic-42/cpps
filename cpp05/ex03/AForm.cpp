@@ -1,6 +1,7 @@
 
 #include "AForm.hpp"
 
+// const init en liste obligatoire
 AForm::AForm() : _name("Default"), _is_signed(false), _sign_grade(150), _execute_grade(150)
 {
 
@@ -18,19 +19,19 @@ AForm::AForm(const AForm &other) : _name(other._name), _is_signed(other._is_sign
 
 AForm &AForm::operator=(const AForm &other)
 {
-	_is_signed = other._is_signed;
+	_is_signed = other._is_signed; // seul attribut non-const copiable
 	return (*this);
 }
 
-AForm::~AForm()
+AForm::~AForm() // virtuel (declare dans le hpp) pour la suppression correcte via AForm*
 {
-	
+
 }
 
 // Member function
 void AForm::beSigned(const Bureaucrat &bureaucrat)
 {
-	if (bureaucrat.getGrade() <= _sign_grade)
+	if (bureaucrat.getGrade() <= _sign_grade) // petit chiffre = haut grade
 		_is_signed = true;
 	else
 		throw GradeTooLowException();
@@ -57,19 +58,20 @@ int AForm::getExecuteGrade() const
 	return (_execute_grade);
 }
 
-void AForm::setIsSigned(bool is_signed)
+void AForm::setIsSigned(bool is_signed) // setter pour les filles (attribut prive dans la base)
 {
 	_is_signed = is_signed;
 }
 
+// execute : verif communes puis appel polymorphe a performAction (specifique a chaque fille)
 void AForm::execute(const Bureaucrat &executor) const
 {
-	if (_is_signed == false)
+	if (_is_signed == false) // pas signe -> pas executable
 		throw IsNotSignedException();
-	if (_execute_grade < executor.getGrade())
+	if (_execute_grade < executor.getGrade()) // grade requis < grade executeur => trop bas
 		throw GradeTooLowException();
 
-	performAction();
+	performAction(); // la bonne version selon le vrai type de l'objet
 }
 
 
@@ -88,6 +90,7 @@ const char *AForm::IsNotSignedException::what() const throw()
 	return ("Form can not be executed, because it is not signed!");
 }
 
+// operator<< : affiche les infos du form
 std::ostream &operator<<(std::ostream &os,  AForm const &AForm)
 {
 	os << "Name: " << AForm.getName() << " isSigned: " << AForm.getIsSigned() << " SignGrade: " << AForm.getSignGrade() << " ExecuteGrade: " << AForm.getExecuteGrade() << std::endl;
