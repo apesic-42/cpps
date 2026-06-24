@@ -9,7 +9,11 @@ AForm::AForm() : _name("Default"), _is_signed(false), _sign_grade(150), _execute
 
 AForm::AForm(const std::string name, const int sign_grade, const int execute_grade) : _name(name), _is_signed(false), _sign_grade(sign_grade), _execute_grade(execute_grade)
 {
-
+	// sujet : grades soumis aux memes regles que le Bureaucrat -> validation + throw si hors bornes
+	if (sign_grade < 1 || execute_grade < 1)
+		throw GradeTooHighException(); // grade < 1 = trop haut
+	if (sign_grade > 150 || execute_grade > 150)
+		throw GradeTooLowException(); // grade > 150 = trop bas
 }
 
 AForm::AForm(const AForm &other) : _name(other._name), _is_signed(other._is_signed), _sign_grade(other._sign_grade), _execute_grade(other._execute_grade)

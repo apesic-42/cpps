@@ -31,7 +31,8 @@ class Bureaucrat
 		class GradeTooHighException : public std::exception // herite de std::exception pour etre catchable facilement
 		{
 			public:
-				virtual const char *what() const throw(); // throw() = cette fonction en revoie elle-meme pas d'erreur
+				virtual const char *what() const throw(); // throw() = cette fonction en revoie elle-meme pas d'erreur, si y'a une erreur ca fait cracher
+				                                          // throw() fait une validation des donner pour ne pas alouer pour r, un peu comme pydentic
 		};
 
 		class GradeTooLowException : public std::exception

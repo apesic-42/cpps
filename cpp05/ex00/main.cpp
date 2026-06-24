@@ -12,7 +12,7 @@ int main(void)
 		// 1500 > 150 donc grade trop bas -> le constructeur throw GradeTooLowException
 		Bureaucrat Sleeper1 = Bureaucrat("Bernd", 1500);
 	}
-	catch(const std::exception &e) // on catch tous ce qui herrite de std::exception, donc notament celle qu'on a coder dans hpp
+	catch(const std::exception &e) // on catch tous ce qui herrite de std::exception, donc notament celle qu'on a coder dans hpp (&e pour avoir bien l'adress de l'exception, pour ne rien louper)
 	{
 		std::cerr << "Exception caught: " << e.what() << std::endl; // e.what() = le message de l'erreur
 	}

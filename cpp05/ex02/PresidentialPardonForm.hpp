@@ -6,7 +6,7 @@
 #include "AForm.hpp"
 #include <fstream>
 
-class PresidentialPardonForm : public AForm
+class PresidentialPardonForm : public AForm // type aform et a acces a tous les membre public et protected
 {
 	private:
 		std::string _target; // la cible a pardonner

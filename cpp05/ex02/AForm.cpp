@@ -10,6 +10,11 @@ AForm::AForm() : _name("Default"), _is_signed(false), _sign_grade(150), _execute
 AForm::AForm(const std::string name, const int sign_grade, const int execute_grade) : _name(name), _is_signed(false), _sign_grade(sign_grade), _execute_grade(execute_grade)
 {
 	// note : les filles appellent ce constructeur avec leurs valeurs (ex 145/137 pour Shrubbery)
+	// sujet : les grades suivent les memes regles que le Bureaucrat -> on valide et on throw si hors bornes
+	if (sign_grade < 1 || execute_grade < 1)
+		throw GradeTooHighException(); // grade < 1 = trop haut (1 est le plus haut)
+	if (sign_grade > 150 || execute_grade > 150)
+		throw GradeTooLowException(); // grade > 150 = trop bas (150 est le plus bas)
 }
 
 AForm::AForm(const AForm &other) : _name(other._name), _is_signed(other._is_signed), _sign_grade(other._sign_grade), _execute_grade(other._execute_grade)
@@ -23,7 +28,7 @@ AForm &AForm::operator=(const AForm &other)
 	return (*this);
 }
 
-AForm::~AForm()
+AForm::~AForm() // declare virtual dans le hpp -> destruction correcte des filles via AForm*
 {
 
 }

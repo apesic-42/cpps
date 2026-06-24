@@ -9,7 +9,14 @@ Form::Form() : _name("Default"), _is_signed(false), _sign_grade(150), _execute_g
 
 Form::Form(const std::string name, const int sign_grade, const int execute_grade) : _name(name), _is_signed(false), _sign_grade(sign_grade), _execute_grade(execute_grade)
 {
-
+	// sujet : les grades du Form suivent les memes regles que ceux du Bureaucrat
+	// 1 = plus haut, 150 = plus bas. La validation arrive APRES la liste d'init
+	// (les const sont deja initialises) mais le throw interrompt la construction :
+	// l'objet Form ne sera jamais "vivant", et _name (string deja construit) est detruit proprement
+	if (sign_grade < 1 || execute_grade < 1)
+		throw GradeTooHighException(); // grade < 1 = trop haut
+	if (sign_grade > 150 || execute_grade > 150)
+		throw GradeTooLowException(); // grade > 150 = trop bas
 }
 
 // constructeur de copie : on recopie tout, meme les const (autoriser dans la liste d'init seulement)

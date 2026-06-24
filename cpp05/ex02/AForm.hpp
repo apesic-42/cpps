@@ -27,7 +27,9 @@ class AForm
 		AForm(const std::string name, const int sign_grade, const int execute_grade);
 		AForm(const AForm &other);
 		AForm &operator=(const AForm &other);
-		~AForm();
+		virtual ~AForm(); // VIRTUEL obligatoire : on manipule les filles via AForm* (polymorphisme).
+		                  // sans virtual, delete sur un AForm* n'appelle QUE ~AForm(), pas le destructeur
+		                  // de la fille -> comportement indefini / fuite. Regle : base polymorphe = dtor virtuel
 
 		// Member fonctions
 		void			beSigned(const Bureaucrat &bureaucrat); // signe si grade suffisant sinon throw
