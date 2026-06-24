@@ -1,0 +1,4 @@
+
+
+on est en train de reviser cpp05 ex1
+session claude :  claude --resume 87ce39aa-27fe-4901-9fa1-7314feffcebd
