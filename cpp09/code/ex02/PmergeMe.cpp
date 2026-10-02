@@ -2,173 +2,134 @@
 #include <iostream>
 #include "PmergeMe.hpp"
 #include <string>
-#include <cstdlib>    // atoi (C++98 friendly)
+#include <cstdlib>
 #include <sys/time.h> // gettimeofday + struct timeval pour mesurer le temps
 
 PmergeMe::PmergeMe(void) {}
 // constructeur de copie : liste d'init qui recopie les 2 containers + leurs buffers
 PmergeMe::PmergeMe(const PmergeMe &copy)
-	: dq(copy.dq), dq_odd(copy.dq_odd), dq_pend(copy.dq_pend),
-	  vctr(copy.vctr), vctr_odd(copy.vctr_odd), vctr_pend(copy.vctr_pend) {}
+	: dq(copy.dq), dq_pend(copy.dq_pend), dq_time(copy.dq_time),
+	  vctr(copy.vctr), vctr_pend(copy.vctr_pend), vctr_time(copy.vctr_time) {}
 PmergeMe::~PmergeMe(void) {}
 PmergeMe	&PmergeMe::operator=(const PmergeMe &copy)
 {
 	if (this != &copy) // anti auto-affectation
 	{
 		dq = copy.dq;
-		dq_odd = copy.dq_odd;
 		dq_pend = copy.dq_pend;
+		dq_time = copy.dq_time;
 		vctr = copy.vctr;
-		vctr_odd = copy.vctr_odd;
 		vctr_pend = copy.vctr_pend;
+		vctr_time = copy.vctr_time;
 	}
 	return (*this);
 }
 
-// helper d'indexation : l'algo travaille par groupes de nb elements, pas par
-// elements isoles. t(val, nb) donne l'index du DERNIER element du groupe val
-// (le dernier d'un groupe est le plus grand, c'est lui qui sert de cle de compare)
-static int			t(int val, int nb)
-{
-	return (val * nb + nb - 1);
-}
-
-// recherche binaire recursive : trouve ou inserer item dans le container a.
-// elle compare avec le dernier element de chaque groupe (t(mid, n)) car c'est
-// le representant (le plus grand) du groupe. template = meme code deque/vector
-template <class Container>
-static int			bin_search(Container a, int item, int low, int high, int n)
-{
-	int	mid;
-
-	if (high <= low) // plus rien a couper : on est sur la position d'insertion
-		return ((item > a[t(low, n)]) ? (t(low + 1, n)) : t(low, n));
-    mid = (low + high) / 2;
-	if (item == a[t(mid, n)]) // egal -> on insere juste apres
-		return (t(mid + 1, n));
-	if (item > a[t(mid, n)]) // plus grand -> on cherche dans la moitie droite
-		return (bin_search(a, item, mid + 1, high, n));
-	return (bin_search(a, item, low, mid - 1, n)); // sinon moitie gauche
-}
-
 // nombres de Jacobsthal : J(0)=0, J(1)=1, J(n)=J(n-1)+2*J(n-2)
-// donne 0,1,1,3,5,11,21... ils dictent l'ordre d'insertion optimal des pendants
-// (recursif naif mais n reste petit donc ca passe)
-int					jacobsthaler(int n)
+// donne 0,1,1,3,5,11,21... ils dictent l'ordre d'insertion optimal des pendants (recursif naif mais n reste petit donc ca passe)
+static unsigned int	jacobsthal(unsigned int n)
 {
 	if (!n)
 		return (0);
-    if (n == 1)
+	if (n == 1)
 		return (1);
-    return (jacobsthaler(n - 1) + 2 * jacobsthaler(n - 2));
+	return (jacobsthal(n - 1) + 2 * jacobsthal(n - 2));
 }
 
-// template <class Container>
-// static void			print(Container cntnr, Container odd, Container pend)
-// {
-// 	std::cout << "cntnr:";
-// 	for (unsigned int i = 0; i < cntnr.size(); i++)
-// 		std::cout << " " << cntnr[i];
-// 	std::cout << std::endl;
-// 	std::cout << "pend:";
-// 	for (unsigned int i = 0; i < pend.size(); i++)
-// 		std::cout << " " << pend[i];
-// 	std::cout << std::endl;
-// 	std::cout << "odd:";
-// 	for (unsigned int i = 0; i < odd.size(); i++)
-// 		std::cout << " " << odd[i];
-// 	std::cout << std::endl;
-// }
+// recherche binaire sur les groupes [0, high) de la chaine. on compare item au derneir element de chaque groupe (c'est le plus grand du groupe = sacle)
+// renvoie l'index du groupe devant lequel inserer (entre 0 et high inclus).
+// high = borne Ford-Johnson, c'est elle qui limite le nombre de comparaisons
+template <class Container>
+static unsigned int	bin_search(const Container &a, int item, unsigned int high, unsigned int nb)
+{
+	unsigned int	low = 0;
+	unsigned int	mid;
 
-// phase DESCENDANTE de l'algo : a chaque niveau (de nb grand vers 1) on insere
-// les petits elements (pendants) dans la chaine principale via Jacobsthal.
+	while (low < high)
+	{
+		mid = (low + high) / 2;
+		if (item > a[mid * nb + nb - 1]) // plus grand que la cle du groupe mid
+			low = mid + 1;               // -> on cherche a droite
+		else
+			high = mid;                  // -> a gauche (egal = on insere devant, ok pour des int)
+	}
+	return (low);
+}
+
+// phase descedndante de l'algo : a chaque niveau (nb grand vers 1) la chaine est
+// une suite de groupes de nb elements, triee par cle (dernier element du groupe).
+//
+// les groupes d'index pair (sauf le 1er) sont les "pendants" b2..bm : chacun est
+// plus petit que son partenaire a_k qui lui reste dans la chaine. on les insere
+// par recherche binaire dans l'ordre de Jacobsthal, puis on descend d'un niveau.
 // template = un seul code pour deque et vector
 template <class Container>
-static Container	insert(Container cntnr, Container odd, Container pend, unsigned int nb)
+static void	insert(Container &cntnr, Container &pend, unsigned int nb)
 {
-	int				i;
-	int				jacobsthal;
-	unsigned int	pos;
+	unsigned int	groups = cntnr.size() / nb; // nb de groupes complets
+	unsigned int	tail = cntnr.size() % nb;   // elements en trop a la fin : ils ne bougent pas a ce niveau
+	Container		odd;
 
-	// 1) si le nombre de groupes est impair, on isole le dernier groupe dans odd
-	if (((cntnr.size() - cntnr.size() % nb) / nb) % 2)
+	// 1) nombre de groupes impair : le dernier n'a pas de partenaire, on le met
+	// de cote. il sera traite comme le dernier pendant (b_{m+1} chez Knuth)
+	if (groups % 2)
 	{
-		odd.insert(odd.begin(), cntnr.end() - cntnr.size() % nb - nb, cntnr.end() - cntnr.size() % nb);
-		cntnr.erase(cntnr.end() - cntnr.size() % nb - nb, cntnr.end() - cntnr.size() % nb);
+		odd.insert(odd.end(), cntnr.end() - tail - nb, cntnr.end() - tail);
+		cntnr.erase(cntnr.end() - tail - nb, cntnr.end() - tail);
 	}
-	// 2) on extrait les pendants (les "petits" de chaque paire) vers pend.
-	// le 1er pendant (index 0) reste car deja a sa place en tete de chaine
-	for (unsigned int i = nb * 2; i + nb - 1 < cntnr.size(); i += nb)
+	// 2) extraction des pendants b2, b3... = groupes 2, 4, 6... (apres chaque
+	// erase le groupe suivant glisse en i, donc i += nb saute bien un groupe).
+	// b1 (groupe 0) reste : il est deja plus petit que a1 donc deja a sa place
+	for (unsigned int i = nb * 2; i + nb - 1 < cntnr.size() - tail; i += nb)
 	{
 		pend.insert(pend.end(), cntnr.begin() + i, cntnr.begin() + i + nb);
 		cntnr.erase(cntnr.begin() + i, cntnr.begin() + i + nb);
 	}
-	// 3) on insere les pendants dans l'ordre dicte par Jacobsthal (3,2,1,5,4,...)
-	jacobsthal = 3;
+	pend.insert(pend.end(), odd.begin(), odd.end()); // l'impair = dernier pendant
+	// 3) insertion par blocs de Jacobsthal. pend[0] = b2 donc le 1er bloc est
+	// b2..b3 (J(3)-J(2) = 2 pendants), puis b4..b5, b6..b11, b12..b21...
+	// dans un bloc on insere du plus grand index vers le plus petit, et la
+	// recherche est limitee aux groupes devant le partenaire a_k : c'est la que
+	// Ford-Johnson gagne ses comparaisons. la borne marche
+	// car b_k <= a_k donc b_k ne peut pas tomber apres a_k
+	unsigned int	k = 3;
 	while (pend.size())
 	{
-		if (jacobsthal == 3) // amorce de la suite
-			pos = 3;
-		else // ecart entre 2 termes de Jacobsthal = combien de pendants ce bloc couvre
-			pos = jacobsthaler(jacobsthal) - jacobsthaler(jacobsthal - 1);
-		if (pos > pend.size() / nb) // plus assez de pendants pour ce bloc Jacobsthal
+		unsigned int	block = jacobsthal(k) - jacobsthal(k - 1); // taille du bloc
+		unsigned int	bound;
+
+		if (block > pend.size() / nb) // dernier bloc partiel
+			block = pend.size() / nb;
+		// borne de recherche en groupes = ce qu'il y a devant le partenaire du
+		// plus grand pendant du bloc : b1 + ses (i-1) a + les pendants des blocs
+		// precedents (J(k-1) - 1) + ceux du bloc inseres avant lui. ca donne
+		// 2*J(k-1) + block - 1, soit 2^k - 1 pour un bloc complet. plafonner
+		// betement a 2^k - 1 fait trop de comparaisons sur le dernier bloc
+		bound = 2 * jacobsthal(k - 1) + block - 1;
+		if (bound > (cntnr.size() - tail) / nb) // chaine plus courte (cas n = 1 : chaine vide)
+			bound = (cntnr.size() - tail) / nb;
+		for (unsigned int pos = block; pos > 0; pos--)
 		{
-			// on vide alors les pendants restants un par un (du 1er vers le dernier)
-			while (pend.size())
-			{
-				// cherche la position d'insertion du pendant (sa cle = dernier elem)
-				i = bin_search(cntnr, pend[nb - 1], 0, cntnr.size() / nb, nb);
-				// std::cout << "1st item to displace: " << *(cntnr.begin() + i - (nb - 1)) << ", i: " << i << ", nb: " << nb << ", item: " << pend[nb - 1] << std::endl;
-				// print(cntnr, odd, pend);
-				// garde fou si la position calculee depasse la fin du container
-				if (cntnr.begin() + i - (nb - 1) > cntnr.end())
-					cntnr.insert(cntnr.end() - cntnr.size() % nb, pend.begin(), pend.begin() + nb);
-				else // insere le groupe entier (nb elements) a sa place
-					cntnr.insert(cntnr.begin() + i - (nb - 1), pend.begin(), pend.begin() + nb);
-				pend.erase(pend.begin(), pend.begin() + nb); // retire le pendant traite
-			}
-			break ;
+			// cle du pendant = son dernier element, on cherche son groupe cible
+			unsigned int	g = bin_search(cntnr, pend[pos * nb - 1], bound, nb);
+
+			// on insere le groupe entier (nb elements) puis on le retire de pend
+			cntnr.insert(cntnr.begin() + g * nb, pend.begin() + (pos - 1) * nb, pend.begin() + pos * nb);
+			pend.erase(pend.begin() + (pos - 1) * nb, pend.begin() + pos * nb);
 		}
-		// insertion dans l'ordre Jacobsthal : du pendant pos vers le 1er (decroissant)
-		while (pos)
-		{
-			i = bin_search(cntnr, pend[nb * pos - 1], 0, cntnr.size() / nb, nb);
-			// std::cout << "1st item to displace: " << *(cntnr.begin() + i - (nb - 1)) << ", i: " << i << ", nb: " << nb << ", item: " << pend[pos * nb - 1] << std::endl;
-			// print(cntnr, odd, pend);
-			if (cntnr.begin() + i - (nb - 1) > cntnr.end()) // meme garde fou
-				cntnr.insert(cntnr.end() - cntnr.size() % nb, pend.begin() + pos * nb - nb, pend.begin() + pos * nb);
-			else
-				cntnr.insert(cntnr.begin() + i - (nb - 1), pend.begin() + pos * nb - nb, pend.begin() + pos * nb);
-			pend.erase(pend.begin() + pos * nb - nb, pend.begin() + pos * nb);
-			pos--;
-		}
-		jacobsthal++; // bloc Jacobsthal suivant
+		k++; // bloc Jacobsthal suivant
 	}
-	// 4) si on avait isole un element impair, on l'insere lui aussi par recherche binaire
-	if (odd.size())
-	{
-		i = bin_search(cntnr, odd[nb - 1], 0, cntnr.size() / nb, nb);
-		// std::cout << "1st item to displace: " << *(cntnr.begin() + i - (nb - 1)) << ", i: " << i << ", nb: " << nb << ", item: " << odd[nb - 1] << std::endl;
-		// print(cntnr, odd, pend);
-		if (cntnr.begin() + i - (nb - 1) > cntnr.end())
-			cntnr.insert(cntnr.end() - cntnr.size() % nb, odd.begin(), odd.begin() + nb);
-		else
-			cntnr.insert(cntnr.begin() + i - (nb - 1), odd.begin(), odd.begin() + nb);
-		odd.clear();
-	}
-	// std::cout << "completed iteration " << nb << std::endl;
-	// print(cntnr, odd, pend);
-	// 5) on redescend d'un niveau (groupes 2x plus petits) jusqu'a nb=1 = tri fini
+	// 4) on redescend d'un niveau (groupes 2x plus petits) jusqu'a nb = 1 = tri fini
 	if (nb >= 2)
-		return (insert(cntnr, odd, pend, nb / 2));
-	return (cntnr); // nb < 2 : la sequence est triee, on la rend
+		insert(cntnr, pend, nb / 2);
 }
 
-// phase MONTANTE : on travaille par groupes de taille nb, on trie chaque paire
-// de demi-groupes (le plus grand a droite) puis on double nb recursivement.
-// quand on ne peut plus doubler on bascule vers insert (phase descendante)
+// phase MONTANTE : on travaille par groupes de taille nb, on compare les 2
+// demi-groupes via leur dernier element et on met le plus grand a droite, puis
+// on double nb recursivement. quand on ne peut plus doubler on bascule vers
+// insert (phase descendante)
 template <class Container>
-static Container	pairsort(Container cntnr, Container odd, Container pend,unsigned int nb)
+static void	pairsort(Container &cntnr, Container &pend, unsigned int nb)
 {
 	// pour chaque groupe de nb : compare les 2 demi-groupes via leur dernier elem
 	for (unsigned int i = 0; i + nb - 1 < cntnr.size(); i += nb)
@@ -176,12 +137,13 @@ static Container	pairsort(Container cntnr, Container odd, Container pend,unsigne
 			// swap les 2 demi-groupes pour mettre le plus grand a droite
 			std::swap_ranges(cntnr.begin() + i, cntnr.begin() + i + (nb / 2), cntnr.begin() + i + (nb / 2));
 	if (nb * 2 > cntnr.size()) // on ne peut plus doubler -> phase d'insertion
-		return (insert(cntnr, odd, pend, nb / 2));
-	return (pairsort(cntnr, odd, pend, nb * 2)); // sinon on double la taille
+		insert(cntnr, pend, nb / 2);
+	else
+		pairsort(cntnr, pend, nb * 2); // sinon on double la taille
 }
 
 // temps ecoule en microsecondes depuis time. gettimeofday = precision us, suffisant
-static long			time_elapsed(struct timeval time)
+static long	time_elapsed(struct timeval time)
 {
 	struct timeval	new_time;
 
@@ -190,14 +152,14 @@ static long			time_elapsed(struct timeval time)
 }
 
 // charge les args dans le deque, le trie, affiche la sequence triee + le temps
-void				PmergeMe::load_dq(char **argv)
+void	PmergeMe::load_dq(char **argv)
 {
 	long	time_store;
 
-	gettimeofday(&dq_time, 0); // top depart du chrono (le parsing compte dedans)
+	gettimeofday(&dq_time, 0); // top depart du chrono (le parsing compte dedans, le sujet le dit)
 	for (int i = 1; argv[i]; i++)
-		dq.push_back(atoi(argv[i])); // atoi = conversion C++98 friendly
-	dq = pairsort(dq, dq_odd, dq_pend, 2); // lance Ford-Johnson en partant de paires
+		dq.push_back(std::atoi(argv[i]));
+	pairsort(dq, dq_pend, 2);              // lance Ford-Johnson en partant de paires
 	time_store = time_elapsed(dq_time);    // stop le chrono
 	std::cout << "After:"; // c'est le deque qui affiche la sequence triee
 	for (unsigned int i = 0; i < dq.size(); i++)
@@ -207,11 +169,11 @@ void				PmergeMe::load_dq(char **argv)
 }
 
 // pareil que load_dq mais avec le vector. affiche que le temps (la seq est la meme)
-void				PmergeMe::load_vctr(char **argv)
+void	PmergeMe::load_vctr(char **argv)
 {
 	gettimeofday(&vctr_time, 0);
 	for (int i = 1; argv[i]; i++)
-		vctr.push_back(atoi(argv[i]));
-	vctr = pairsort(vctr, vctr_odd, vctr_pend, 2);
+		vctr.push_back(std::atoi(argv[i]));
+	pairsort(vctr, vctr_pend, 2);
 	std::cout << "Time to process a range of " << vctr.size() << " elements with std::vector : " << time_elapsed(vctr_time) << " us" << std::endl;
 }
