@@ -1,5 +1,4 @@
-// ex01 RPN (Reverse Polish Notation) : le sujet impose un container, ici std::stack
-// la stack est un LIFO, parfait pour evaluer une expression postfixee
+// la stack est un LIFO (Last In, First Out ("dernier entre, premier sorti")), parfait pour evaluer une expression postfixee
 #ifndef RPN_HPP
 # define RPN_HPP
 # include <stack> // le container demande, expose juste push/pop/top/size

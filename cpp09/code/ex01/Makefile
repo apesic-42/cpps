@@ -1,6 +1,7 @@
 NAME	:= RPN
 FLAGS	:= -Wall -Werror -Wextra -std=c++98
 SRC	:= main.cpp RPN.cpp
+HDR	:= RPN.hpp
 
 all: $(NAME)
 
@@ -10,14 +11,14 @@ clean:
 	@rm -rf $(NAME).dSYM
 
 debug: fclean
-	@g++ $(FLAGS) -fsanitize=address -g $(SRC) -o $(NAME)
+	@c++ $(FLAGS) -fsanitize=address -g $(SRC) -o $(NAME)
 
 fclean: clean
 	@rm -rf $(NAME)
 
 re: fclean all
 
-$(NAME): $(SRC)
-	@g++ $(FLAGS) $(SRC) -o $(NAME)
+$(NAME): $(SRC) $(HDR)
+	@c++ $(FLAGS) $(SRC) -o $(NAME)
 
-.PHONY: all, bonus, clean, debug, fclean, re,
+.PHONY: all bonus clean debug fclean re
